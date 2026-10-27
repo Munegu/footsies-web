@@ -43,6 +43,13 @@ jamais. Version de référence : commit `08c293961bd0420ed7cdf26afa2fa032b6f98b7
 Touches physiques (`KeyboardEvent.code`) : sur un clavier AZERTY, la touche de J1 « A » est
 la touche `Q`. `F12` affiche / masque les boxes et la frame data.
 
+## Modes (provisoires)
+
+Par défaut J2 est le CPU (port de `BattleAI.cs`). Paramètres d'URL, en attendant le menu :
+
+- `?mode=2p` : deux joueurs sur le même clavier ;
+- `?seed=N` : graine du CPU, pour rejouer exactement la même partie (affichée dans la console).
+
 ## Données extraites
 
 `npm run extract` lit l'original (`vendor/`) et produit dans `src/data/` : `f00.json` (frame data),

@@ -1,5 +1,6 @@
 import f00 from './data/f00.json';
 import type { FighterJson } from './data/types.ts';
+import { createCpu, cpuInput, cpuObserve } from './ai/cpu.ts';
 import { createBattle, stepBattle } from './engine/battle.ts';
 import { buildFighterData } from './engine/fighter-data.ts';
 import { attachKeyboard } from './input/keyboard.ts';
@@ -19,6 +20,17 @@ let battle = createBattle();
 const assets = await loadAssets();
 let view = new BattleView(assets.clips);
 let showDebug = false; // F12, comme dans l'original
+
+// Provisoire (jusqu'au menu de l'étape 8) : VS CPU par défaut, `?mode=2p` pour deux joueurs,
+// `?seed=N` pour rejouer exactement le même CPU.
+const params = new URLSearchParams(window.location.search);
+const seedParam = Number(params.get('seed'));
+const seed =
+  params.get('seed') !== null && Number.isInteger(seedParam)
+    ? seedParam
+    : (crypto.getRandomValues(new Uint32Array(1))[0] ?? 1);
+const cpu = params.get('mode') === '2p' ? null : createCpu(seed);
+if (cpu) console.info(`VS CPU, graine ${seed} (ajouter ?seed=${seed} à l'URL pour rejouer)`);
 
 const input = new InputState();
 attachKeyboard(input, (code) => {
@@ -50,7 +62,10 @@ document.addEventListener('visibilitychange', () => stepper.reset());
 function frame(now: number): void {
   const ticks = stepper.advance(now);
   for (let i = 0; i < ticks; i++) {
-    stepBattle(battle, data, input.sample());
+    const sampled = input.sample();
+    // Contre le CPU, les touches de J2 sont ignorées (mais `skip` garde le Attack physique).
+    stepBattle(battle, data, cpu ? { ...sampled, p2: cpuInput(cpu, battle) } : sampled);
+    if (cpu) cpuObserve(cpu, battle.events);
     view.onTick(battle, data);
     // En attendant l'écran titre (étape 8) : on relance un match à la fin de celui-ci.
     if (battle.matchOver) {
