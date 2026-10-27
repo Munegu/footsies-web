@@ -1,6 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { PNG } from 'pngjs';
+import { buildOptionsLabel, LABEL_HEIGHT, LABEL_WIDTH } from './labels.ts';
 import type { SpriteRect, SpritesJson } from '../../src/data/types.ts';
 import {
   list,
@@ -211,9 +212,14 @@ const UI_FILES = [
   'Art/Guard.png',
   'Art/HitEffect.png',
   'Art/Logo.png',
+  'Art/Menu.png',
+  'Art/MenuButton.png',
   'Art/PlayerLabel.png',
   'Art/Round.png',
+  'Art/Sound.png',
   'Art/UI.png',
+  'Art/CreatedBy.png',
+  'Art/Version.png',
 ];
 
 export interface UiAtlas {
@@ -258,6 +264,22 @@ export function buildUiAtlas(assetsDir: string): UiAtlas {
       add(file.replace(/\.png$/, ''), SPRITE_FILE_ID_BASE);
     }
   }
+
+  // Libellé OPTIONS : n'existe pas dans l'original, généré depuis Menu.png.
+  const menuPng = pngs.get(join(assetsDir, 'Art/Menu.png'));
+  if (!menuPng) throw new Error('Menu.png non chargé');
+  const generated = 'generated/Menu_Options.png';
+  pngs.set(generated, buildOptionsLabel(menuPng));
+  named.set('Menu_Options', {
+    png: generated,
+    x: 0,
+    y: 0,
+    w: LABEL_WIDTH,
+    h: LABEL_HEIGHT,
+    pivotX: 0,
+    pivotY: 0,
+    pixelsPerUnit: 10,
+  });
 
   const unique = new Map<string, SourceSprite>();
   for (const s of named.values()) unique.set(spriteKey(s), s);

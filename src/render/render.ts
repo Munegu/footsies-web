@@ -101,7 +101,7 @@ function drawLayer(
 }
 
 /** Dessine un sprite de l'atlas `atlas` (nom ou motionID) dans `dest`. */
-function drawSprite(
+export function drawSprite(
   ctx: CanvasRenderingContext2D,
   atlas: Atlas,
   key: string,

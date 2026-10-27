@@ -33,7 +33,7 @@ jamais. Version de référence : commit `08c293961bd0420ed7cdf26afa2fa032b6f98b7
 | `npm run typecheck` | `tsc --noEmit`                         |
 | `npm run extract`   | Régénère `src/data/` depuis l'original |
 
-## Contrôles (provisoires)
+## Contrôles
 
 |     | Gauche | Droite | Attaque      |
 | --- | ------ | ------ | ------------ |
@@ -41,15 +41,14 @@ jamais. Version de référence : commit `08c293961bd0420ed7cdf26afa2fa032b6f98b7
 | J2  | `←`    | `→`    | `Maj` droite |
 
 Touches physiques (`KeyboardEvent.code`) : sur un clavier AZERTY, la touche de J1 « A » est
-la touche `Q`. `F12` affiche / masque les boxes et la frame data, `M` coupe / rétablit la
-musique. Le son démarre à la première touche ou au premier clic (règle des navigateurs).
+la touche `Q`. `F12` affiche / masque les boxes et la frame data.
 
-## Modes (provisoires)
+**Menus :** haut / bas ou `W` / `S`, validation `Entrée` ou `Espace`, ou la souris. `Échap` ouvre
+la pause en combat. Le son démarre à la première touche ou au premier clic (règle des
+navigateurs) ; la case en haut à droite du titre coupe la musique.
 
-Par défaut J2 est le CPU (port de `BattleAI.cs`). Paramètres d'URL, en attendant le menu :
-
-- `?mode=2p` : deux joueurs sur le même clavier ;
-- `?seed=N` : graine du CPU, pour rejouer exactement la même partie (affichée dans la console).
+**Debug :** `?seed=N` dans l'URL rejoue exactement le même CPU (la graine est affichée dans la
+console).
 
 ## Données extraites
 

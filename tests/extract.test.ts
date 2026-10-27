@@ -200,8 +200,8 @@ describe("atlas d'interface et animations", () => {
     return [s.w, s.h];
   };
 
-  it("contient les 18 sprites de l'interface, avec leurs tailles d'origine", () => {
-    expect(Object.keys(ui.sprites)).toHaveLength(18);
+  it("contient les 31 sprites de l'interface, avec leurs tailles d'origine", () => {
+    expect(Object.keys(ui.sprites)).toHaveLength(31);
     expect(size('BG')).toEqual([160, 90]);
     expect(size('Battle_Window')).toEqual([155, 65]);
     expect(size('Logo')).toEqual([50, 15]);
@@ -244,6 +244,57 @@ describe("atlas d'interface et animations", () => {
       expect(alphaAt(g.x + i, g.y - 1)).toBe(0);
       expect(alphaAt(g.x + i, g.y + g.h)).toBe(0);
     }
+  });
+
+  it('sprites du menu : libellés et boutons 50x11, son 11x11, crédits', () => {
+    for (let i = 0; i < 4; i++) expect(size(`Menu_${i}`)).toEqual([50, 11]);
+    for (let i = 0; i < 3; i++) expect(size(`MenuButton_${i}`)).toEqual([50, 11]);
+    for (let i = 0; i < 3; i++) expect(size(`Sound_${i}`)).toEqual([11, 11]);
+    expect(size('CreatedBy')).toEqual([100, 10]);
+    expect(size('Version')).toEqual([40, 10]);
+    expect(size('Menu_Options')).toEqual([50, 11]);
+  });
+
+  /** Les pixels opaques d'un sprite de l'atlas, en lignes de '#' et '.'. */
+  const ascii = (name: string, x0 = 0, w?: number): string[] => {
+    const s = ui.sprites[name];
+    if (!s) throw new Error(`${name} absent`);
+    const lines: string[] = [];
+    for (let y = 0; y < s.h; y++) {
+      let line = '';
+      for (let x = x0; x < (w === undefined ? s.w : x0 + w); x++) {
+        const a = atlasPng.data[((s.y + y) * atlasPng.width + s.x + x) * 4 + 3] ?? 0;
+        line += a > 0 ? '#' : '.';
+      }
+      lines.push(line);
+    }
+    return lines;
+  };
+
+  it('OPTIONS : 7 lettres de 5x5 centrées, espacées de 1 px, sur les lignes 3 à 7', () => {
+    const rows = ascii('Menu_Options');
+    expect(rows.slice(0, 3).every((r) => !r.includes('#'))).toBe(true);
+    expect(rows.slice(8).every((r) => !r.includes('#'))).toBe(true);
+    // Encre de x = 4 à x = 44 (41 px) : centrée dans 50 (4 px à gauche, 5 à droite).
+    const ink = rows.slice(3, 8);
+    const first = Math.min(...ink.map((r) => r.indexOf('#')).filter((i) => i >= 0));
+    const last = Math.max(...ink.map((r) => r.lastIndexOf('#')));
+    expect([first, last]).toEqual([4, 44]);
+    // Colonne d'écart vide entre chaque lettre.
+    for (const gap of [9, 15, 21, 27, 33, 39]) {
+      expect(ink.every((r) => r[gap] === '.')).toBe(true);
+    }
+  });
+
+  it("OPTIONS reprend les lettres de l'original (P de CPU, S de PL2) et dessine O et N", () => {
+    const options = ascii('Menu_Options').slice(3, 8);
+    const letter = (n: number) => options.map((r) => r.slice(4 + n * 6, 4 + n * 6 + 5));
+    const fromLabel = (name: string, x: number) => ascii(name, x, 5).slice(3, 8);
+    expect(letter(0)).toEqual(['#####', '##.##', '##.##', '##.##', '#####']); // O
+    expect(letter(1)).toEqual(fromLabel('Menu_0', 30)); // P de « VS CPU »
+    expect(letter(6)).toEqual(fromLabel('Menu_1', 16)); // S de « VS PL2 »
+    expect(letter(5)).toEqual(['#...#', '##..#', '#.#.#', '#..##', '#...#']); // N
+    expect(letter(4)).toEqual(letter(0)); // second O
   });
 
   it('HitEffect_5 (état éteint) est vide, les 5 autres cellules sont dessinées', () => {

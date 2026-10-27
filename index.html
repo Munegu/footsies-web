@@ -21,10 +21,35 @@
         display: block;
         image-rendering: pixelated;
       }
+      #credits {
+        position: fixed;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        padding: 6px 12px;
+        background: rgba(0, 0, 0, 0.75);
+        color: #ddd;
+        font: 13px/1.4 monospace;
+        text-align: center;
+      }
+      #credits[hidden] {
+        display: none;
+      }
+      #credits a {
+        color: #fff;
+      }
     </style>
   </head>
   <body>
     <canvas id="game"></canvas>
+    <footer id="credits" hidden>
+      Original game by
+      <a href="https://github.com/hifight/Footsies" target="_blank" rel="noopener">HiFight</a>
+      · Web port under GPL-3.0 ·
+      <a href="https://github.com/Munegu/footsies-web" target="_blank" rel="noopener"
+        >source code</a
+      >
+    </footer>
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>

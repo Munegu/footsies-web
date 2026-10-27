@@ -77,3 +77,22 @@ describe('InputState', () => {
     expect(s.sample().p1).toBe(Right);
   });
 });
+
+describe('lecture des touches par les menus', () => {
+  it("isHeld : tenue, pas la mémoire d'un appui court", () => {
+    const s = new InputState();
+    s.keyDown('Enter');
+    s.keyUp('Enter');
+    expect(s.isHeld('Enter')).toBe(false);
+    expect(s.wasPressed('Enter')).toBe(true);
+  });
+
+  it('wasPressed et clearPressed', () => {
+    const s = new InputState();
+    s.keyDown('Escape');
+    expect(s.wasPressed('Escape')).toBe(true);
+    s.clearPressed();
+    expect(s.wasPressed('Escape')).toBe(false);
+    expect(s.isHeld('Escape')).toBe(true);
+  });
+});

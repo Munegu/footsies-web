@@ -49,6 +49,21 @@ export class InputState {
     this.pressed.clear();
   }
 
+  /** La touche est enfoncée en ce moment (sans la mémoire des appuis courts). */
+  isHeld(code: string): boolean {
+    return this.held.has(code);
+  }
+
+  /** La touche a été appuyée depuis la dernière lecture (même un appui plus court qu'un tick). */
+  wasPressed(code: string): boolean {
+    return this.pressed.has(code);
+  }
+
+  /** Oublie les appuis courts (les menus lisent leurs touches sans appeler `sample`). */
+  clearPressed(): void {
+    this.pressed.clear();
+  }
+
   private isDown(code: string): boolean {
     return this.held.has(code) || this.pressed.has(code);
   }
