@@ -2,7 +2,7 @@
 // Les entrées (clavier, manette, IA, rejeu) arrivent en paramètre de `stepBattle` : le moteur
 // n'appelle ni InputManager ni BattleAI. Débug (F1/F2) et enregistrement des inputs : hors moteur.
 import { overlaps, rectOverlaps, rectXMax, rectXMin, xMax, xMin, yMax, yMin } from './boxes.ts';
-import type { FighterData } from './fighter-data.ts';
+import { getAction, type FighterData } from './fighter-data.ts';
 import { DT, f32 } from './f32.ts';
 import {
   applyPositionChange,
@@ -26,6 +26,7 @@ import {
   updateIntroAction,
   updateMovement,
 } from './fighter.ts';
+import type { DeepReadonly } from './readonly.ts';
 import type { BattleEvent, FighterContext, FighterState } from './types.ts';
 
 /** `RoundStateType` (BattleCore.cs:14-21). */
@@ -310,4 +311,22 @@ function updateHitboxHurtboxCollision(b: BattleState, ctx: FighterContext): void
       }
     }
   }
+}
+
+/**
+ * `GetFrameAdvantage` (BattleCore.cs:531-545), pour l'affichage de debug : frames restantes de
+ * l'adversaire moins les siennes (une action toujours annulable compte pour 0).
+ */
+export function frameAdvantage(
+  b: DeepReadonly<BattleState>,
+  data: FighterData,
+  forPlayerOne: boolean,
+): number {
+  const framesLeft = (f: DeepReadonly<FighterState>): number => {
+    const action = getAction(data, f.currentActionId);
+    return action.alwaysCancelable ? 0 : action.frameCount - f.currentActionFrame;
+  };
+  const p1Left = framesLeft(b.fighter1);
+  const p2Left = framesLeft(b.fighter2);
+  return forPlayerOne ? p2Left - p1Left : p1Left - p2Left;
 }

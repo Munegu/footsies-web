@@ -33,6 +33,16 @@ jamais. Version de référence : commit `08c293961bd0420ed7cdf26afa2fa032b6f98b7
 | `npm run typecheck` | `tsc --noEmit`                         |
 | `npm run extract`   | Régénère `src/data/` depuis l'original |
 
+## Contrôles (provisoires)
+
+|     | Gauche | Droite | Attaque      |
+| --- | ------ | ------ | ------------ |
+| J1  | `A`    | `D`    | `Espace`     |
+| J2  | `←`    | `→`    | `Maj` droite |
+
+Touches physiques (`KeyboardEvent.code`) : sur un clavier AZERTY, la touche de J1 « A » est
+la touche `Q`. `F12` affiche / masque les boxes et la frame data.
+
 ## Données extraites
 
 `npm run extract` lit l'original (`vendor/`) et produit dans `src/data/` : `f00.json` (frame data),

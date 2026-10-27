@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   RoundState,
   createBattle,
+  frameAdvantage,
   stepBattle,
   type BattleInput,
   type BattleState,
@@ -372,5 +373,19 @@ describe('spéciaux, KO et fin de round', () => {
     const snapshot = structuredClone(b);
     step(b, { p1: Attack, p2: Attack });
     expect(b).toEqual(snapshot);
+  });
+});
+
+describe('avantage de frame (debug)', () => {
+  it('actions toujours annulables : 0', () => {
+    const b = fightBattle();
+    expect(frameAdvantage(b, data, true)).toBe(0);
+  });
+
+  it("attaquant en cours (22 - frame) contre perso libre : désavantage pour lui, avantage pour l'autre", () => {
+    const b = fightBattle();
+    attackOnce(b, 9); // N_ATTACK frame 9 : 13 frames restantes
+    expect(frameAdvantage(b, data, true)).toBe(0 - 13);
+    expect(frameAdvantage(b, data, false)).toBe(13 - 0);
   });
 });
