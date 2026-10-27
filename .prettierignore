@@ -1,0 +1,7 @@
+node_modules
+dist
+vendor
+LICENSE
+package-lock.json
+CLAUDE.md
+SPECS.md
