@@ -59,6 +59,11 @@ export class InputState {
     return this.pressed.has(code);
   }
 
+  /** Lit et efface l'appui d'une seule touche (F1 / F2 de debug). */
+  consumePressed(code: string): boolean {
+    return this.pressed.delete(code);
+  }
+
   /** Oublie les appuis courts (les menus lisent leurs touches sans appeler `sample`). */
   clearPressed(): void {
     this.pressed.clear();

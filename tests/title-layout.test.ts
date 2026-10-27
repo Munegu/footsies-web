@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { itemAt } from '../src/ui/hit-test.ts';
-import { PAUSE_RECTS, pauseItemAt } from '../src/ui/pause.ts';
+import { PANEL_RECT, PAUSE_RECTS, pauseItemAt } from '../src/ui/pause.ts';
 import { clientToRef } from '../src/ui/pointer.ts';
 import {
   BUTTON_RECTS,
@@ -73,10 +73,19 @@ describe('quel élément sous la souris ?', () => {
     expect(titleItemAt(800, 250)).toBeNull(); // le logo
   });
 
-  it('pause : Reprendre et Retour au titre', () => {
+  it('pause : Reprendre, Rejeu du dernier round et Retour au titre', () => {
     expect(pauseItemAt(...center(PAUSE_RECTS.resume))).toBe('resume');
+    expect(pauseItemAt(...center(PAUSE_RECTS.replay))).toBe('replay');
     expect(pauseItemAt(...center(PAUSE_RECTS.quit))).toBe('quit');
     expect(pauseItemAt(10, 10)).toBeNull();
+  });
+
+  it("les trois éléments de la pause sont dans l'ordre, sans chevauchement, dans le panneau", () => {
+    const { resume, replay, quit } = PAUSE_RECTS;
+    expect(resume.y + resume.h).toBeLessThanOrEqual(replay.y);
+    expect(replay.y + replay.h).toBeLessThanOrEqual(quit.y);
+    expect(quit.y + quit.h).toBeLessThanOrEqual(PANEL_RECT.y + PANEL_RECT.h);
+    expect(resume.y).toBeGreaterThan(PANEL_RECT.y);
   });
 
   it("itemAt dépend de l'écran", () => {

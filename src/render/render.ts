@@ -21,12 +21,14 @@ import {
   WINDOW_RECT,
   type Rect,
 } from './hud-layout.ts';
-import { fightToScreenX } from './layout.ts';
+import { REF_WIDTH, fightToScreenX } from './layout.ts';
 import type { BattleView, Layer } from './view.ts';
 
 export interface RenderOptions {
   /** F12 : boxes et textes de debug. */
   showDebug: boolean;
+  /** F1 : le combat est figé (pause de debug). */
+  debugPaused?: boolean;
 }
 
 export function renderFrame(
@@ -55,6 +57,7 @@ export function renderFrame(
   for (const layer of view.order) drawLayer(ctx, layer, scale, view, b, assets);
 
   if (options.showDebug) renderDebugOverlay(ctx, b, data);
+  if (options.debugPaused) drawBanner(ctx, 'PAUSE DEBUG   F2 : un tick   F1 : reprendre');
 }
 
 function drawLayer(
@@ -172,4 +175,16 @@ function drawFighter(
     drawSprite(ctx, atlas, String(motion), { ...dest, x: -FIGHTER_WIDTH / 2 });
     ctx.restore();
   }
+}
+
+/** Petit bandeau de texte en haut de l'écran (pause de debug, rejeu). */
+export function drawBanner(ctx: CanvasRenderingContext2D, text: string, y = 38): void {
+  ctx.font = 'bold 30px monospace';
+  const width = ctx.measureText(text).width + 40;
+  ctx.fillStyle = 'rgba(0, 0, 0, 0.85)';
+  ctx.fillRect((REF_WIDTH - width) / 2, y - 24, width, 48);
+  ctx.fillStyle = '#ffffff';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(text, REF_WIDTH / 2, y);
 }

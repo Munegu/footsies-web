@@ -4,11 +4,13 @@ Portage fidèle dans le navigateur de **FOOTSIES**, le jeu de combat minimaliste
 
 > Original game by [HiFight](https://github.com/hifight/Footsies)
 
-## Licence
+## Licence et crédits
 
-Ce projet reprend la logique, les données, les sprites et les sons de l'original, publié sous
-**GPL-3.0**. Il est donc lui-même distribué sous GPL-3.0 (voir `LICENSE`). Le code source doit
-rester public si le jeu est publié.
+FOOTSIES est un jeu de **HiFight**, publié sous **GPL-3.0** (<https://github.com/hifight/Footsies>).
+Ce projet en est une **version modifiée : un portage dans le navigateur (TypeScript, Canvas 2D,
+Web Audio), réalisé en 2026**. Il reprend la logique, les données, les sprites et les sons de
+l'original et est donc lui-même distribué sous **GPL-3.0** (voir `LICENSE`). Le code source doit
+rester public tant que le jeu est publié.
 
 ## Démarrage
 
@@ -59,8 +61,11 @@ l'écran d'options indique les manettes reconnues.
 la pause en combat. Le son démarre à la première touche ou au premier clic (règle des
 navigateurs) ; la case en haut à droite du titre coupe la musique.
 
-**Debug :** `?seed=N` dans l'URL rejoue exactement le même CPU (la graine est affichée dans la
-console).
+**Outils de debug :** `F12` affiche les boxes et la frame data. En combat, `F1` fige le jeu et
+`F2` avance d'un tick (comme l'original). Le menu de pause propose le **rejeu du dernier round
+terminé** : le moteur étant déterministe, il se rejoue à l'identique, et l'écran vérifie le hash
+de l'état à chaque tick (« identique ✓ » ou « divergence au tick N »). `?seed=N` dans l'URL
+rejoue exactement le même CPU (la graine est affichée dans la console).
 
 ## Données extraites
 

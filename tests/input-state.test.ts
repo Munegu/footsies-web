@@ -96,3 +96,18 @@ describe('lecture des touches par les menus', () => {
     expect(s.isHeld('Escape')).toBe(true);
   });
 });
+
+describe('consumePressed (touches de debug)', () => {
+  it("lit et efface l'appui d'une seule touche", () => {
+    const s = new InputState();
+    s.keyDown('F1');
+    s.keyDown('Space');
+    expect(s.consumePressed('F1')).toBe(true);
+    expect(s.consumePressed('F1')).toBe(false);
+    expect(s.wasPressed('Space')).toBe(true); // les autres touches ne sont pas touchées
+  });
+
+  it('une touche jamais appuyée : false', () => {
+    expect(new InputState().consumePressed('F2')).toBe(false);
+  });
+});

@@ -1,6 +1,13 @@
 import { describe, expect, it } from 'vitest';
 import { DEFAULT_SETTINGS } from '../src/input/settings.ts';
-import { TITLE_ITEMS, createApp, reduce, type AppEvent, type AppState } from '../src/ui/app.ts';
+import {
+  PAUSE_ITEMS,
+  TITLE_ITEMS,
+  createApp,
+  reduce,
+  type AppEvent,
+  type AppState,
+} from '../src/ui/app.ts';
 import { selectedId } from '../src/ui/menu.ts';
 
 /** Applique des événements en chaîne et renvoie l'état et tous les effets émis. */
@@ -132,7 +139,7 @@ describe('combat et pause', () => {
   });
 
   it('valider Retour au titre : quitte le combat, titre neuf', () => {
-    const r = run([cancel, down, confirm], inBattle());
+    const r = run([cancel, down, down, confirm], inBattle());
     expect(r.state.screen).toBe('title');
     expect(r.effects).toEqual(['quitBattle']);
     expect(selectedId(r.state.titleMenu)).toBe('vsPlayer');
@@ -180,7 +187,7 @@ describe('réglages conservés', () => {
 
   it('retour au titre depuis la pause, fin de match et sortie des options les conservent', () => {
     const inBattle = run([confirm], createApp(custom)).state;
-    expect(run([cancel, down, confirm], inBattle).state.settings).toBe(custom);
+    expect(run([cancel, down, down, confirm], inBattle).state.settings).toBe(custom);
     expect(run([{ kind: 'matchOver' }], inBattle).state.settings).toBe(custom);
     const options = run([down, down, confirm], createApp(custom)).state;
     expect(run([cancel], options).state.settings).toBe(custom);
@@ -227,5 +234,74 @@ describe('réglages conservés', () => {
         app,
       ).state,
     ).toEqual(app);
+  });
+});
+
+describe('rejeu du dernier round (outil de debug)', () => {
+  const inPause = () => run([confirm, cancel]).state;
+  const available: AppEvent = { kind: 'setReplayAvailable', value: true };
+
+  it('la pause a trois éléments : Reprendre, Rejeu du dernier round, Retour au titre', () => {
+    expect(PAUSE_ITEMS).toEqual(['resume', 'replay', 'quit']);
+  });
+
+  it('aucun round terminé : « Rejeu » ne fait rien', () => {
+    const r = run([down, confirm], inPause());
+    expect(r.state.screen).toBe('pause');
+    expect(r.effects).toEqual([]);
+    expect(selectedId(r.state.pauseMenu)).toBe('replay');
+  });
+
+  it('un round terminé : valider lance le rejeu', () => {
+    const r = run([available, down, confirm], inPause());
+    expect(r.state.screen).toBe('replay');
+    expect(r.effects).toEqual(['startReplay']);
+  });
+
+  it('un clic sur « Rejeu » le lance aussi', () => {
+    const r = run([available, { kind: 'activate', id: 'replay' }], inPause());
+    expect(r.state.screen).toBe('replay');
+    expect(r.effects).toEqual(['startReplay']);
+  });
+
+  it('Échap pendant le rejeu : retour à la pause, le rejeu reste disponible', () => {
+    const r = run([available, down, confirm, cancel], inPause());
+    expect(r.state.screen).toBe('pause');
+    expect(r.effects).toEqual(['startReplay', 'stopReplay']);
+    expect(r.state.replayAvailable).toBe(true);
+    expect(selectedId(r.state.pauseMenu)).toBe('replay');
+  });
+
+  it('pendant le rejeu : directions, validation et fin de match sont ignorées', () => {
+    const replaying = run([available, down, confirm], inPause()).state;
+    expect(run([down, up, confirm, { kind: 'matchOver' }], replaying).state).toEqual(replaying);
+  });
+
+  it("setReplayAvailable : bascule le drapeau sur n'importe quel écran", () => {
+    expect(run([available]).state.replayAvailable).toBe(true);
+    expect(
+      run([available, { kind: 'setReplayAvailable', value: false }]).state.replayAvailable,
+    ).toBe(false);
+    const inOptions = run([down, down, confirm]).state;
+    expect(run([available], inOptions).state.replayAvailable).toBe(true);
+  });
+
+  it('même valeur : même état (pas de changement inutile)', () => {
+    const before = createApp();
+    expect(reduce(before, { kind: 'setReplayAvailable', value: false }).state).toBe(before);
+  });
+
+  it('retour au titre ou fin de match : le drapeau retombe (nouveau match)', () => {
+    const r = run([available, down, down, confirm], inPause());
+    expect(r.state.screen).toBe('title');
+    expect(r.state.replayAvailable).toBe(false);
+    expect(run([available, { kind: 'matchOver' }], inPause()).state.replayAvailable).toBe(false);
+  });
+
+  it('les paramètres sont conservés pendant tout le rejeu', () => {
+    const custom = { ...DEFAULT_SETTINGS, sfxVolume: 0.2 };
+    const start = run([confirm, cancel, available, down, confirm], createApp(custom)).state;
+    expect(start.screen).toBe('replay');
+    expect(start.settings).toBe(custom);
   });
 });

@@ -3,8 +3,17 @@ import type { FighterJson } from './data/types.ts';
 import { createCpu, cpuInput, cpuObserve, type CpuPlayer } from './ai/cpu.ts';
 import { GameAudio } from './audio/game-audio.ts';
 import { loadAudio } from './audio/loader.ts';
-import { createBattle, stepBattle, type BattleState } from './engine/battle.ts';
+import { createDebugControls, updateDebugControls } from './debug/debug-controls.ts';
+import { RoundState, createBattle, stepBattle, type BattleState } from './engine/battle.ts';
 import { buildFighterData } from './engine/fighter-data.ts';
+import {
+  RoundRecorder,
+  createReplay,
+  isIdentical,
+  stepReplay,
+  type ReplayState,
+  type RoundRecording,
+} from './engine/replay.ts';
 import {
   BUTTON,
   GamepadPoller,
@@ -21,7 +30,7 @@ import { loadSettings, saveSettings, type Settings } from './input/settings.ts';
 import { FixedStepper } from './loop.ts';
 import { loadAssets } from './render/assets.ts';
 import { INTERNAL_HEIGHT, INTERNAL_WIDTH, REF_WIDTH, integerScale } from './render/layout.ts';
-import { renderFrame } from './render/render.ts';
+import { drawBanner, renderFrame } from './render/render.ts';
 import { BattleView } from './render/view.ts';
 import { createApp, reduce, type AppEffect, type AppEvent, type Mode } from './ui/app.ts';
 import { hitAt } from './ui/hit-test.ts';
@@ -118,6 +127,16 @@ let view: BattleView | null = null;
 let cpu: CpuPlayer | null = null;
 let pressedId: string | null = null;
 
+// Outils de debug : enregistrement du round, pause F1 / pas à pas F2, rejeu du dernier round.
+const recorder = new RoundRecorder();
+const debug = createDebugControls();
+interface ReplaySession {
+  rec: RoundRecording;
+  state: ReplayState;
+  view: BattleView;
+}
+let replay: ReplaySession | null = null;
+
 // Manettes : lues à chaque tick ; attribuées à J1 puis J2 dans l'ordre de connexion.
 const gamepads = new GamepadPoller(() => navigator.getGamepads());
 let padSlots: PadSlots = [null, null];
@@ -137,11 +156,25 @@ function startBattle(mode: Mode): void {
   } else {
     cpu = null;
   }
+  recorder.reset();
+  debug.paused = false;
   // Une touche encore enfoncée (Entrée, Espace) ne doit pas déclencher d'action en combat.
   input.releaseAll();
   stepper.reset();
   padAttackBlocked[0] = padAttackBlocked[1] = true;
   audio?.playMenuSelect(); // GameManager.LoadBattleScene
+}
+
+/** Rejeu du dernier round terminé, dans une session à part : le match en cours n'est pas touché. */
+function startReplay(): void {
+  const rec = recorder.last;
+  if (!rec) return;
+  const state = createReplay(rec);
+  const replayView = new BattleView(assets.clips);
+  replayView.onTick(state.battle, data); // l'instantané contient l'événement roundStart
+  replay = { rec, state, view: replayView };
+  debug.paused = false;
+  stepper.reset();
 }
 
 function apply(effect: AppEffect): void {
@@ -158,6 +191,16 @@ function apply(effect: AppEffect): void {
       battle = null;
       view = null;
       cpu = null;
+      replay = null;
+      debug.paused = false;
+      break;
+    case 'startReplay':
+      startReplay();
+      break;
+    case 'stopReplay':
+      replay = null;
+      debug.paused = false;
+      stepper.reset();
       break;
     case 'previewSfx':
       audio?.playMenuSelect();
@@ -251,6 +294,11 @@ function tickScreen(pad1: PadSnapshot | null, pad2: PadSnapshot | null): void {
       dispatch({ kind: 'cancel' });
       return;
     }
+    // F1 fige le combat, F2 avance d'un tick (seulement en phase de combat, comme l'original).
+    const f1 = input.consumePressed('F1');
+    const f2 = input.consumePressed('F2');
+    if (!updateDebugControls(debug, battle.roundState, f1, f2)) return;
+
     // Clavier et manettes se combinent ; contre le CPU, J2 est piloté par l'IA (mais `skip`
     // garde le Attack physique des deux joueurs).
     const sampled = mergePadInput(
@@ -258,11 +306,32 @@ function tickScreen(pad1: PadSnapshot | null, pad2: PadSnapshot | null): void {
       withoutHeldAttack(pad1, 0),
       withoutHeldAttack(pad2, 1),
     );
-    stepBattle(battle, data, cpu ? { ...sampled, p2: cpuInput(cpu, battle) } : sampled);
+    const stepInput = cpu ? { ...sampled, p2: cpuInput(cpu, battle) } : sampled;
+    stepBattle(battle, data, stepInput);
     if (cpu) cpuObserve(cpu, battle.events);
     audio?.playEvents(battle.events);
     view.onTick(battle, data);
+    // Un round terminé devient rejouable (menu de pause).
+    if (recorder.observe(stepInput, battle)) dispatch({ kind: 'setReplayAvailable', value: true });
     if (battle.matchOver) dispatch({ kind: 'matchOver' }); // retour au titre
+    return;
+  }
+
+  if (app.screen === 'replay' && replay) {
+    const f1 = input.consumePressed('F1');
+    const f2 = input.consumePressed('F2');
+    // Échap, B ou Start : retour au menu de pause.
+    const m = mergeMenuInput(sampleMenuInput(input), padMenuInput(prevPad[0], pad1));
+    if (m.cancel) {
+      dispatch({ kind: 'cancel' });
+      return;
+    }
+    if (replay.state.done) return;
+    // F1 / F2 valent aussi pour le rejeu.
+    if (!updateDebugControls(debug, replay.state.battle.roundState, f1, f2)) return;
+    stepReplay(replay.state, replay.rec, data);
+    audio?.playEvents(replay.state.battle.events);
+    replay.view.onTick(replay.state.battle, data);
     return;
   }
 
@@ -298,6 +367,13 @@ function resize(): void {
 window.addEventListener('resize', resize);
 resize();
 
+function replayBannerText(state: ReplayState, rec: RoundRecording): string {
+  if (!state.done) return `REJEU  tick ${state.tick} / ${rec.inputs.length}   Échap : retour`;
+  if (isIdentical(state))
+    return `REJEU TERMINÉ : identique ✓ (${rec.inputs.length} ticks)   Échap : retour`;
+  return `REJEU TERMINÉ : DIVERGENCE au tick ${(state.divergedAt ?? 0) + 1} ✗   Échap : retour`;
+}
+
 function draw(): void {
   const context = ctx as CanvasRenderingContext2D;
   const scale = canvas.width / REF_WIDTH;
@@ -324,8 +400,23 @@ function draw(): void {
     case 'battle':
     case 'pause':
       if (battle && view) {
-        renderFrame(context, scale, view, battle, data, assets, { showDebug });
-        if (app.screen === 'pause') drawPause(context, scale, app.pauseMenu);
+        renderFrame(context, scale, view, battle, data, assets, {
+          showDebug,
+          debugPaused: debug.paused && battle.roundState === RoundState.Fight,
+        });
+        if (app.screen === 'pause') {
+          drawPause(context, scale, app.pauseMenu, app.replayAvailable);
+        }
+      }
+      break;
+    case 'replay':
+      if (replay) {
+        const { state, rec, view: replayView } = replay;
+        renderFrame(context, scale, replayView, state.battle, data, assets, {
+          showDebug,
+          debugPaused: debug.paused && state.battle.roundState === RoundState.Fight,
+        });
+        drawBanner(context, replayBannerText(state, rec), 96);
       }
       break;
   }

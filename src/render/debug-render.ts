@@ -30,7 +30,8 @@ export function renderDebugOverlay(
   ctx.font = '26px monospace';
   ctx.textAlign = 'center';
   ctx.textBaseline = 'top';
-  ctx.fillText('F12 = affichage debug', REF_WIDTH / 2, REF_HEIGHT * 0.95);
+  // Texte de BattleGUI.OnGUI.
+  ctx.fillText('F1=Pause/Resume, F2=Frame Step, F12=Debug Draw', REF_WIDTH / 2, REF_HEIGHT * 0.95);
 }
 
 /** `BattleGUI.DrawFighter` : textes, puis hurtboxes, pushbox et hitboxes (ordre de l'original). */
