@@ -56,10 +56,23 @@ describe('touches de menu (InputManager.asset)', () => {
     expect(sampleMenuInput(s).cancel).toBe(false);
   });
 
-  it('les touches de jeu (A, D) ne font rien dans les menus', () => {
+  it('gauche / droite (réglage des curseurs) : flèches ou A / D, sans effet sur haut / bas', () => {
+    for (const [code, hdir] of [
+      ['ArrowLeft', -1],
+      ['KeyA', -1],
+      ['ArrowRight', 1],
+      ['KeyD', 1],
+    ] as const) {
+      const s = new InputState();
+      s.keyDown(code);
+      expect(sampleMenuInput(s)).toEqual({ dir: 0, hdir, confirm: false, cancel: false });
+    }
+  });
+
+  it('gauche et droite ensemble : aucune direction horizontale', () => {
     const s = new InputState();
-    s.keyDown('KeyA');
-    s.keyDown('KeyD');
-    expect(sampleMenuInput(s)).toEqual({ dir: 0, confirm: false, cancel: false });
+    s.keyDown('ArrowLeft');
+    s.keyDown('ArrowRight');
+    expect(sampleMenuInput(s).hdir).toBe(0);
   });
 });

@@ -35,15 +35,21 @@ jamais. Version de référence : commit `08c293961bd0420ed7cdf26afa2fa032b6f98b7
 
 ## Contrôles
 
+Par défaut :
+
 |     | Gauche | Droite | Attaque      |
 | --- | ------ | ------ | ------------ |
 | J1  | `A`    | `D`    | `Espace`     |
 | J2  | `←`    | `→`    | `Maj` droite |
 
-Touches physiques (`KeyboardEvent.code`) : sur un clavier AZERTY, la touche de J1 « A » est
-la touche `Q`. `F12` affiche / masque les boxes et la frame data.
+Les touches se changent dans **Options** (une touche déjà prise est échangée avec l'autre action)
+et sont sauvegardées dans le navigateur, avec les volumes et le réglage de la musique. Ce sont des
+touches physiques (`KeyboardEvent.code`) : l'écran d'options affiche ce qui est gravé sur ton
+clavier (la touche « A » de J1 s'affiche « Q » sur un clavier AZERTY). `F12` affiche / masque les
+boxes et la frame data.
 
-**Menus :** haut / bas ou `W` / `S`, validation `Entrée` ou `Espace`, ou la souris. `Échap` ouvre
+**Menus :** haut / bas ou `W` / `S`, gauche / droite pour régler les curseurs, validation
+`Entrée` ou `Espace`, ou la souris. `Échap` ouvre
 la pause en combat. Le son démarre à la première touche ou au premier clic (règle des
 navigateurs) ; la case en haut à droite du titre coupe la musique.
 

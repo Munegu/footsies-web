@@ -7,16 +7,18 @@ import { createBattle, stepBattle, type BattleState } from './engine/battle.ts';
 import { buildFighterData } from './engine/fighter-data.ts';
 import { attachKeyboard } from './input/keyboard.ts';
 import { InputState } from './input/input-state.ts';
+import { loadSettings, saveSettings, type Settings } from './input/settings.ts';
 import { FixedStepper } from './loop.ts';
 import { loadAssets } from './render/assets.ts';
 import { INTERNAL_HEIGHT, INTERNAL_WIDTH, REF_WIDTH, integerScale } from './render/layout.ts';
 import { renderFrame } from './render/render.ts';
 import { BattleView } from './render/view.ts';
 import { createApp, reduce, type AppEffect, type AppEvent, type Mode } from './ui/app.ts';
-import { itemAt } from './ui/hit-test.ts';
+import { hitAt } from './ui/hit-test.ts';
 import { createRepeater, stepRepeater } from './ui/menu.ts';
 import { sampleMenuInput } from './ui/menu-input.ts';
-import { drawOptionsStub, drawPause } from './ui/pause.ts';
+import { drawOptions } from './ui/options-screen.ts';
+import { drawPause } from './ui/pause.ts';
 import { clientToRef } from './ui/pointer.ts';
 import { drawTitle } from './ui/title.ts';
 
@@ -28,6 +30,29 @@ if (!ctx) throw new Error('Canvas 2D indisponible');
 const data = buildFighterData(f00 as unknown as FighterJson);
 const assets = await loadAssets();
 let showDebug = false; // F12, comme dans l'original
+
+// Réglages sauvegardés (touches, volumes, son). `localStorage` peut être indisponible.
+const storage = ((): Storage | null => {
+  try {
+    return window.localStorage;
+  } catch {
+    return null;
+  }
+})();
+
+// Disposition réelle du clavier (Chrome) : affiche ce qui est gravé sur les touches.
+let keyboardLayout: ReadonlyMap<string, string> | null = null;
+try {
+  const kb = (
+    navigator as unknown as { keyboard?: { getLayoutMap(): Promise<ReadonlyMap<string, string>> } }
+  ).keyboard;
+  void kb
+    ?.getLayoutMap()
+    .then((m) => (keyboardLayout = m))
+    .catch(() => undefined);
+} catch {
+  // API absente : on affiche les noms par défaut.
+}
 
 // Option de debug : `?seed=N` rejoue exactement le même CPU (sinon graine aléatoire).
 const seedParam = new URLSearchParams(window.location.search).get('seed');
@@ -51,22 +76,39 @@ document.addEventListener('visibilitychange', () =>
   document.hidden ? audio?.suspend() : audio?.wake(),
 );
 
-const input = new InputState();
+const initialSettings = loadSettings(storage);
+const input = new InputState(initialSettings.bindings);
 attachKeyboard(input, (code) => {
   if (code === 'F12') showDebug = !showDebug;
+  // Écran d'options : la touche appuyée est celle qu'on veut affecter.
+  if (app.screen === 'options' && app.options.capturing) {
+    dispatch({ kind: 'key', code });
+    input.releaseAll(); // la touche ne doit pas aussi naviguer ou valider au tick suivant
+  }
 });
+
+/** Applique les réglages au jeu : touches, volumes, son. */
+function applySettings(s: Settings): void {
+  input.setBindings(s.bindings);
+  audio?.setMasterVolume(s.masterVolume);
+  audio?.setMusicVolume(s.musicVolume);
+  audio?.setSfxVolume(s.sfxVolume);
+  audio?.setMusicEnabled(s.musicEnabled);
+}
 
 const stepper = new FixedStepper();
 document.addEventListener('visibilitychange', () => stepper.reset());
 
 // --- Application : écran courant et combat en cours ---------------------------------------
 
-let app = createApp();
+let app = createApp(initialSettings);
+applySettings(initialSettings);
 let battle: BattleState | null = null;
 let view: BattleView | null = null;
 let cpu: CpuPlayer | null = null;
 let pressedId: string | null = null;
 const repeater = createRepeater();
+const hRepeater = createRepeater();
 
 function startBattle(mode: Mode): void {
   battle = createBattle();
@@ -98,15 +140,20 @@ function apply(effect: AppEffect): void {
       view = null;
       cpu = null;
       break;
-    case 'toggleMusic':
-      audio?.toggleMusic();
+    case 'previewSfx':
+      audio?.playMenuSelect();
       break;
   }
 }
 
 function dispatch(event: AppEvent): void {
+  const previous = app.settings;
   const result = reduce(app, event);
   app = result.state;
+  if (app.settings !== previous) {
+    applySettings(app.settings);
+    saveSettings(storage, app.settings);
+  }
   result.effects.forEach(apply);
 }
 
@@ -116,18 +163,30 @@ const toRef = (e: MouseEvent): { x: number; y: number } =>
 
 canvas.addEventListener('mousemove', (e) => {
   const p = toRef(e);
-  const id = itemAt(app.screen, p.x, p.y);
-  canvas.style.cursor = id ? 'pointer' : 'default';
-  if (id) dispatch({ kind: 'hover', id });
+  const hit = hitAt(app.screen, p.x, p.y);
+  canvas.style.cursor = hit ? 'pointer' : 'default';
+  if (hit && !(app.screen === 'options' && app.options.capturing)) {
+    dispatch({ kind: 'hover', id: hit.id });
+  }
 });
 canvas.addEventListener('mousedown', (e) => {
   const p = toRef(e);
-  pressedId = itemAt(app.screen, p.x, p.y);
+  pressedId = hitAt(app.screen, p.x, p.y)?.id ?? null;
 });
 canvas.addEventListener('mouseup', (e) => {
   const p = toRef(e);
-  const id = itemAt(app.screen, p.x, p.y);
-  if (id && id === pressedId) dispatch({ kind: 'activate', id });
+  const hit = hitAt(app.screen, p.x, p.y);
+  if (hit && hit.id === pressedId && !(app.screen === 'options' && app.options.capturing)) {
+    if (
+      hit.value !== undefined &&
+      (hit.id === 'master' || hit.id === 'music' || hit.id === 'sfx')
+    ) {
+      dispatch({ kind: 'hover', id: hit.id });
+      dispatch({ kind: 'setVolume', id: hit.id, value: hit.value });
+    } else {
+      dispatch({ kind: 'activate', id: hit.id });
+    }
+  }
   pressedId = null;
 });
 
@@ -151,9 +210,16 @@ function tick(): void {
   }
 
   if (app.screen === 'pause' || app.screen === 'title' || app.screen === 'options') {
+    // Pendant la capture d'une touche, seul l'événement clavier compte.
+    if (app.screen === 'options' && app.options.capturing) {
+      input.clearPressed();
+      return;
+    }
     const m = sampleMenuInput(input);
     const fired = stepRepeater(repeater, m.dir);
     if (fired !== 0) dispatch({ kind: 'move', delta: fired });
+    const adjust = stepRepeater(hRepeater, app.screen === 'options' ? m.hdir : 0);
+    if (adjust !== 0) dispatch({ kind: 'adjust', delta: adjust });
     if (m.confirm) dispatch({ kind: 'confirm' });
     if (m.cancel) dispatch({ kind: 'cancel' });
   }
@@ -183,11 +249,11 @@ function draw(): void {
     case 'title':
       drawTitle(context, scale, assets.ui, app.titleMenu, {
         pressedId,
-        musicOn: audio?.isMusicEnabled ?? true,
+        musicOn: app.settings.musicEnabled,
       });
       break;
     case 'options':
-      drawOptionsStub(context, scale, assets.ui);
+      drawOptions(context, scale, assets.ui, app.options, app.settings, keyboardLayout);
       break;
     case 'battle':
     case 'pause':

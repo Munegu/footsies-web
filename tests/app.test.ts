@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { DEFAULT_SETTINGS } from '../src/input/settings.ts';
 import { TITLE_ITEMS, createApp, reduce, type AppEvent, type AppState } from '../src/ui/app.ts';
 import { selectedId } from '../src/ui/menu.ts';
 
@@ -64,14 +65,22 @@ describe('titre', () => {
     expect(selectedId(back.state.titleMenu)).toBe('options');
   });
 
-  it('valider le son : bascule la musique sans quitter le titre', () => {
+  it('valider le son : bascule la musique (réglage) sans quitter le titre', () => {
     const r = run([up, confirm]);
     expect(r.state.screen).toBe('title');
-    expect(r.effects).toEqual(['toggleMusic']);
+    expect(r.effects).toEqual([]);
+    expect(r.state.settings.musicEnabled).toBe(false);
+    // La sélection reste sur le son : valider de nouveau rétablit la musique.
+    expect(run([confirm], r.state).state.settings.musicEnabled).toBe(true);
   });
 
   it('Échap sur le titre : rien', () => {
     expect(run([cancel]).state).toEqual(createApp());
+  });
+
+  it('valider VS PL2 ne touche pas aux réglages (même référence)', () => {
+    const before = createApp();
+    expect(run([confirm], before).state.settings).toBe(before.settings);
   });
 });
 
@@ -95,7 +104,7 @@ describe('souris', () => {
 
   it('cliquer le son bascule la musique', () => {
     const r = run([{ kind: 'activate', id: 'sound' }]);
-    expect(r.effects).toEqual(['toggleMusic']);
+    expect(r.state.settings.musicEnabled).toBe(false);
     expect(selectedId(r.state.titleMenu)).toBe('sound');
   });
 });
@@ -159,5 +168,64 @@ describe('combat et pause', () => {
 
   it('matchOver hors combat est ignoré', () => {
     expect(run([{ kind: 'matchOver' }]).effects).toEqual([]);
+  });
+});
+
+describe('réglages conservés', () => {
+  const custom = { ...DEFAULT_SETTINGS, sfxVolume: 0.3, musicEnabled: false };
+
+  it('createApp garde les réglages donnés', () => {
+    expect(createApp(custom).settings).toBe(custom);
+  });
+
+  it('retour au titre depuis la pause, fin de match et sortie des options les conservent', () => {
+    const inBattle = run([confirm], createApp(custom)).state;
+    expect(run([cancel, down, confirm], inBattle).state.settings).toBe(custom);
+    expect(run([{ kind: 'matchOver' }], inBattle).state.settings).toBe(custom);
+    const options = run([down, down, confirm], createApp(custom)).state;
+    expect(run([cancel], options).state.settings).toBe(custom);
+  });
+
+  it('options : entrer ouvre un écran neuf, quitter ramène au titre sur OPTIONS', () => {
+    const enter = run([down, down, confirm]);
+    expect(enter.state.screen).toBe('options');
+    expect(selectedId(enter.state.options.menu)).toBe('p1Left');
+    const left = run([cancel], enter.state);
+    expect(left.state.screen).toBe('title');
+    expect(selectedId(left.state.titleMenu)).toBe('options');
+  });
+
+  it('options : Retour (dernière ligne) ramène au titre', () => {
+    let state = run([down, down, confirm]).state;
+    state = run([up, confirm], state).state; // haut depuis la 1re ligne = dernière ligne : Retour
+    expect(state.screen).toBe('title');
+  });
+
+  it('options : un réglage modifié change la référence des réglages, pas les autres', () => {
+    const entered = run([down, down, confirm]).state;
+    const adjusted = run(
+      [
+        { kind: 'move', delta: -1 },
+        { kind: 'move', delta: -1 },
+        { kind: 'move', delta: -1 },
+        { kind: 'adjust', delta: -1 },
+      ],
+      entered,
+    );
+    expect(adjusted.state.settings).not.toBe(entered.settings);
+    expect(adjusted.state.settings.bindings).toBe(entered.settings.bindings);
+  });
+
+  it("les événements d'options sont ignorés hors de l'écran d'options", () => {
+    const app = createApp();
+    expect(
+      run(
+        [
+          { kind: 'adjust', delta: 1 },
+          { kind: 'key', code: 'KeyZ' },
+        ],
+        app,
+      ).state,
+    ).toEqual(app);
   });
 });

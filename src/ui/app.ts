@@ -1,4 +1,6 @@
+import { DEFAULT_SETTINGS, type Settings } from '../input/settings.ts';
 import { createMenu, moveSelection, selectedId, selectId, type MenuState } from './menu.ts';
+import { createOptions, reduceOptions, type OptionsEvent, type OptionsState } from './options.ts';
 
 /** L'écran courant de l'application. */
 export type Screen = 'title' | 'options' | 'battle' | 'pause';
@@ -12,16 +14,14 @@ export interface AppState {
   screen: Screen;
   titleMenu: MenuState;
   pauseMenu: MenuState;
+  options: OptionsState;
+  /** Réglages du joueur (touches, volumes, son) : conservés d'un écran à l'autre. */
+  settings: Settings;
 }
 
 export type AppEvent =
-  | { kind: 'move'; delta: -1 | 1 }
-  | { kind: 'confirm' }
-  | { kind: 'cancel' }
-  /** La souris survole un élément. */
-  | { kind: 'hover'; id: string }
-  /** Clic sur un élément. */
-  | { kind: 'activate'; id: string }
+  /** Tous les événements de navigation (aussi ceux de l'écran d'options). */
+  | OptionsEvent
   /** Le combat est terminé (premier à 3 rounds). */
   | { kind: 'matchOver' };
 
@@ -30,13 +30,20 @@ export type AppEffect =
   | { kind: 'startBattle'; mode: Mode }
   | { kind: 'resumeBattle' }
   | { kind: 'quitBattle' }
-  | { kind: 'toggleMusic' };
+  /** Joue un son d'essai (réglage du volume). */
+  | { kind: 'previewSfx' };
 
 const freshTitle = (): MenuState => createMenu(TITLE_ITEMS, 0); // sélection initiale : VS PL2
 const freshPause = (): MenuState => createMenu(PAUSE_ITEMS, 0);
 
-export function createApp(): AppState {
-  return { screen: 'title', titleMenu: freshTitle(), pauseMenu: freshPause() };
+export function createApp(settings: Settings = DEFAULT_SETTINGS): AppState {
+  return {
+    screen: 'title',
+    titleMenu: freshTitle(),
+    pauseMenu: freshPause(),
+    options: createOptions(),
+    settings,
+  };
 }
 
 interface Result {
@@ -48,6 +55,9 @@ const unchanged = (state: AppState): Result => ({ state, effects: [] });
 
 /** Transitions de l'application : `(état, événement) -> (état, effets)`. */
 export function reduce(state: AppState, event: AppEvent): Result {
+  if (state.screen === 'options' && event.kind !== 'matchOver')
+    return reduceOptionsScreen(state, event);
+
   switch (event.kind) {
     case 'move':
       if (state.screen === 'title') {
@@ -80,10 +90,26 @@ export function reduce(state: AppState, event: AppEvent): Result {
 
     case 'matchOver':
       if (state.screen === 'battle' || state.screen === 'pause') {
-        return { state: createApp(), effects: [{ kind: 'quitBattle' }] };
+        return { state: createApp(state.settings), effects: [{ kind: 'quitBattle' }] };
       }
       return unchanged(state);
+
+    // Événements propres à l'écran d'options : ignorés ailleurs.
+    case 'adjust':
+    case 'key':
+    case 'setVolume':
+      return unchanged(state);
   }
+}
+
+/** L'écran d'options délègue à sa propre logique ; `leave` ramène au titre, sur OPTIONS. */
+function reduceOptionsScreen(state: AppState, event: OptionsEvent): Result {
+  const r = reduceOptions(state.options, state.settings, event);
+  const next: AppState = { ...state, options: r.options, settings: r.settings };
+  if (r.leave) {
+    return { state: { ...next, screen: 'title', options: createOptions() }, effects: r.effects };
+  }
+  return { state: next, effects: r.effects };
 }
 
 function confirm(state: AppState): Result {
@@ -100,9 +126,12 @@ function confirm(state: AppState): Result {
           effects: [{ kind: 'startBattle', mode: 'cpu' }],
         };
       case 'options':
-        return unchanged({ ...state, screen: 'options' });
+        return unchanged({ ...state, screen: 'options', options: createOptions() });
       case 'sound':
-        return { state, effects: [{ kind: 'toggleMusic' }] };
+        return unchanged({
+          ...state,
+          settings: { ...state.settings, musicEnabled: !state.settings.musicEnabled },
+        });
     }
     return unchanged(state);
   }
@@ -111,7 +140,7 @@ function confirm(state: AppState): Result {
     if (selectedId(state.pauseMenu) === 'resume') {
       return { state: { ...state, screen: 'battle' }, effects: [{ kind: 'resumeBattle' }] };
     }
-    return { state: createApp(), effects: [{ kind: 'quitBattle' }] };
+    return { state: createApp(state.settings), effects: [{ kind: 'quitBattle' }] };
   }
 
   // Écran d'options (provisoire) : valider revient au titre.
@@ -126,7 +155,7 @@ function cancel(state: AppState): Result {
     case 'pause':
       return { state: { ...state, screen: 'battle' }, effects: [{ kind: 'resumeBattle' }] };
     case 'options':
-      return unchanged({ ...state, screen: 'title' });
+      return unchanged(state); // géré par reduceOptionsScreen
     case 'title':
       return unchanged(state);
   }

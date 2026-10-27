@@ -1,9 +1,7 @@
 // Menu de pause et écran d'options provisoire. L'original n'a ni l'un ni l'autre (Échap y
 // renvoie directement au titre) : texte dessiné au canvas, en police monospace du système.
-import type { Atlas } from '../render/assets.ts';
-import { BG_RECT, type Rect } from '../render/hud-layout.ts';
+import type { Rect } from '../render/hud-layout.ts';
 import { REF_HEIGHT, REF_WIDTH } from '../render/layout.ts';
-import { drawSprite } from '../render/render.ts';
 import type { MenuState } from './menu.ts';
 import { selectedId } from './menu.ts';
 
@@ -62,17 +60,4 @@ export function drawPause(ctx: CanvasRenderingContext2D, scale: number, menu: Me
     ctx.textBaseline = 'middle';
     ctx.fillText(PAUSE_LABELS[id], r.x + r.w / 2, r.y + r.h / 2);
   }
-}
-
-/** Écran d'options provisoire (remplacé à l'étape 8b). */
-export function drawOptionsStub(ctx: CanvasRenderingContext2D, scale: number, ui: Atlas): void {
-  ctx.setTransform(scale, 0, 0, scale, 0, 0);
-  ctx.imageSmoothingEnabled = false;
-  drawSprite(ctx, ui, 'BG', BG_RECT);
-  drawPanel(ctx, 'OPTIONS');
-  ctx.fillStyle = '#000000';
-  ctx.font = '40px monospace';
-  ctx.textAlign = 'center';
-  ctx.fillText('Bientôt : touches, volume, manettes', REF_WIDTH / 2, 430);
-  ctx.fillText('Entrée / Échap : retour', REF_WIDTH / 2, 520);
 }
