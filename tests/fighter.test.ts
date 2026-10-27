@@ -281,7 +281,7 @@ describe('dégâts, garde et guard break', () => {
     const t = newFighter(true);
     tick(t, Left);
     for (let i = 0; i < 4; i++) notifyDamaged(t.f, t.ctx, atk(t, 1));
-    const sounds = t.events.filter((e) => e.clip === 'GuardBreak_1');
+    const sounds = t.events.filter((e) => e.kind === 'sound' && e.clip === 'GuardBreak_1');
     expect(sounds).toHaveLength(1);
 
     setHitStun(t.f, getHitStunFrame(t.ctx, DamageResult.GuardBreak, 1));
@@ -290,7 +290,7 @@ describe('dégâts, garde et guard break', () => {
     expect(t.f.currentActionId).toBe(ActionId.GUARD_CROUCH);
     tick(t, 0);
     expect(t.f.currentActionId).toBe(ActionId.GUARD_BREAK);
-    expect(t.events.filter((e) => e.clip === 'GuardBreak_1')).toHaveLength(1);
+    expect(t.events.filter((e) => e.kind === 'sound' && e.clip === 'GuardBreak_1')).toHaveLength(1);
   });
 
   it('valeurs de hitstop : 12 / 12 / 30 pour un normal, 0 / 15 / 30 pour un spécial', () => {

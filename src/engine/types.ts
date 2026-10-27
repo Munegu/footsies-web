@@ -59,14 +59,27 @@ export interface FighterState {
   hasWon: boolean;
 }
 
-/** Effets de bord du C# (SoundManager, damageHandler), remontés au lieu d'être appelés. */
-export type BattleEvent = {
-  kind: 'sound';
-  clip: string;
-  /** `isFaceRight` du combattant : c'est ce que le C# passe comme `isPlayerOne`. */
-  playerOne: boolean;
-  posX: number;
-};
+/** Effets de bord du C# (SoundManager, damageHandler, Animator), remontés au lieu d'être appelés. */
+export type BattleEvent =
+  | {
+      kind: 'sound';
+      clip: string;
+      /** `isFaceRight` du combattant : c'est ce que le C# passe comme `isPlayerOne`. */
+      playerOne: boolean;
+      posX: number;
+    }
+  | {
+      /** `BattleCore.damageHandler(damaged, damagePos, damageResult)`. */
+      kind: 'damage';
+      damagedIsPlayerOne: boolean;
+      x: number;
+      y: number;
+      result: DamageResult;
+    }
+  /** `roundUIAnimator.SetTrigger("RoundStart")` (entrée en Intro). */
+  | { kind: 'roundStart' }
+  /** `roundUIAnimator.SetTrigger("RoundEnd")` (entrée en KO). */
+  | { kind: 'roundEnd' };
 
 /** Ce dont les fonctions du moteur ont besoin en plus de l'état. */
 export interface FighterContext {
