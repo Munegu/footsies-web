@@ -86,6 +86,8 @@ Respecter cet ordre exact, il a des conséquences sur le gameplay :
 8. Poussée contre les bords de l'aire.
 9. Collisions hitbox / hurtbox, J1 attaquant d'abord, puis J2.
 
+**Particularité de l'étape 7** (`UpdatePushCharacterVsCharacter`) : `rect1` et `rect2` sont des `UnityEngine.Rect` bruts, pas des `Pushbox`. Dans un `Rect` Unity, `x` est le bord **gauche** (`xMax = x + width`) et `Overlaps` est **strict** ; or `x` contient ici le centre. Les bornes inclusives et le `x` centré ne valent que pour `BoxBase` (hit/hurt, et poussée contre les bords). À reproduire tel quel (`rectOverlaps` dans `boxes.ts`).
+
 ### 4.4 Inputs
 
 - Bitmask : `Left = 1`, `Right = 2`, `Attack = 4`.
