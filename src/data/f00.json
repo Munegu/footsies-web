@@ -1,0 +1,2037 @@
+{
+  "fighter": {
+    "startGuardHealth": 3,
+    "forwardMoveSpeed": 2.2,
+    "backwardMoveSpeed": 1.8,
+    "dashAllowFrame": 9,
+    "specialAttackHoldFrame": 60,
+    "canCancelOnWhiff": false,
+    "baseHurtBoxRect": {
+      "x": 0,
+      "y": 0,
+      "width": 1.5,
+      "height": 1.2
+    },
+    "basePushBoxRect": {
+      "x": 0,
+      "y": 0,
+      "width": 1.4,
+      "height": 1
+    }
+  },
+  "actions": {
+    "0": {
+      "actionID": 0,
+      "actionName": "STAND",
+      "type": "Movement",
+      "frameCount": 24,
+      "isLoop": false,
+      "loopFromFrame": 0,
+      "motions": [
+        {
+          "startEndFrame": [
+            0,
+            5
+          ],
+          "motionID": 0
+        },
+        {
+          "startEndFrame": [
+            6,
+            8
+          ],
+          "motionID": 1
+        },
+        {
+          "startEndFrame": [
+            9,
+            14
+          ],
+          "motionID": 2
+        },
+        {
+          "startEndFrame": [
+            15,
+            20
+          ],
+          "motionID": 3
+        },
+        {
+          "startEndFrame": [
+            21,
+            23
+          ],
+          "motionID": 4
+        }
+      ],
+      "status": [],
+      "hitboxes": [],
+      "hurtboxes": [
+        {
+          "startEndFrame": [
+            0,
+            59
+          ],
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "width": 1,
+            "height": 1.2
+          },
+          "useBaseRect": true
+        }
+      ],
+      "pushboxes": [
+        {
+          "startEndFrame": [
+            0,
+            59
+          ],
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "width": 0.8,
+            "height": 1
+          },
+          "useBaseRect": true
+        }
+      ],
+      "movements": [],
+      "cancels": [],
+      "alwaysCancelable": true,
+      "audioClip": null
+    },
+    "1": {
+      "actionID": 1,
+      "actionName": "FORWARD",
+      "type": "Movement",
+      "frameCount": 24,
+      "isLoop": false,
+      "loopFromFrame": 0,
+      "motions": [
+        {
+          "startEndFrame": [
+            0,
+            3
+          ],
+          "motionID": 10
+        },
+        {
+          "startEndFrame": [
+            4,
+            7
+          ],
+          "motionID": 11
+        },
+        {
+          "startEndFrame": [
+            8,
+            11
+          ],
+          "motionID": 12
+        },
+        {
+          "startEndFrame": [
+            12,
+            15
+          ],
+          "motionID": 13
+        },
+        {
+          "startEndFrame": [
+            16,
+            19
+          ],
+          "motionID": 14
+        },
+        {
+          "startEndFrame": [
+            20,
+            23
+          ],
+          "motionID": 15
+        }
+      ],
+      "status": [],
+      "hitboxes": [],
+      "hurtboxes": [
+        {
+          "startEndFrame": [
+            0,
+            59
+          ],
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "width": 1,
+            "height": 1.2
+          },
+          "useBaseRect": true
+        }
+      ],
+      "pushboxes": [
+        {
+          "startEndFrame": [
+            0,
+            59
+          ],
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "width": 0.8,
+            "height": 1
+          },
+          "useBaseRect": true
+        }
+      ],
+      "movements": [],
+      "cancels": [],
+      "alwaysCancelable": true,
+      "audioClip": null
+    },
+    "2": {
+      "actionID": 2,
+      "actionName": "BACKWARD",
+      "type": "Movement",
+      "frameCount": 24,
+      "isLoop": false,
+      "loopFromFrame": 0,
+      "motions": [
+        {
+          "startEndFrame": [
+            0,
+            3
+          ],
+          "motionID": 20
+        },
+        {
+          "startEndFrame": [
+            4,
+            7
+          ],
+          "motionID": 21
+        },
+        {
+          "startEndFrame": [
+            8,
+            11
+          ],
+          "motionID": 22
+        },
+        {
+          "startEndFrame": [
+            12,
+            15
+          ],
+          "motionID": 23
+        },
+        {
+          "startEndFrame": [
+            16,
+            19
+          ],
+          "motionID": 24
+        },
+        {
+          "startEndFrame": [
+            20,
+            23
+          ],
+          "motionID": 25
+        }
+      ],
+      "status": [],
+      "hitboxes": [],
+      "hurtboxes": [
+        {
+          "startEndFrame": [
+            0,
+            59
+          ],
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "width": 1,
+            "height": 1.2
+          },
+          "useBaseRect": true
+        }
+      ],
+      "pushboxes": [
+        {
+          "startEndFrame": [
+            0,
+            59
+          ],
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "width": 0.8,
+            "height": 1
+          },
+          "useBaseRect": true
+        }
+      ],
+      "movements": [],
+      "cancels": [],
+      "alwaysCancelable": true,
+      "audioClip": null
+    },
+    "10": {
+      "actionID": 10,
+      "actionName": "DASH_FORWARD",
+      "type": "Movement",
+      "frameCount": 16,
+      "isLoop": false,
+      "loopFromFrame": 0,
+      "motions": [
+        {
+          "startEndFrame": [
+            0,
+            7
+          ],
+          "motionID": 30
+        },
+        {
+          "startEndFrame": [
+            8,
+            10
+          ],
+          "motionID": 31
+        },
+        {
+          "startEndFrame": [
+            11,
+            12
+          ],
+          "motionID": 32
+        },
+        {
+          "startEndFrame": [
+            13,
+            14
+          ],
+          "motionID": 33
+        },
+        {
+          "startEndFrame": [
+            15,
+            15
+          ],
+          "motionID": 34
+        }
+      ],
+      "status": [],
+      "hitboxes": [],
+      "hurtboxes": [
+        {
+          "startEndFrame": [
+            0,
+            15
+          ],
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "width": 1,
+            "height": 1.2
+          },
+          "useBaseRect": true
+        }
+      ],
+      "pushboxes": [
+        {
+          "startEndFrame": [
+            0,
+            15
+          ],
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "width": 0.8,
+            "height": 1
+          },
+          "useBaseRect": true
+        }
+      ],
+      "movements": [
+        {
+          "startEndFrame": [
+            0,
+            2
+          ],
+          "velocity_x": 5
+        },
+        {
+          "startEndFrame": [
+            3,
+            8
+          ],
+          "velocity_x": 7
+        },
+        {
+          "startEndFrame": [
+            9,
+            11
+          ],
+          "velocity_x": 5
+        },
+        {
+          "startEndFrame": [
+            12,
+            13
+          ],
+          "velocity_x": 2
+        },
+        {
+          "startEndFrame": [
+            14,
+            14
+          ],
+          "velocity_x": 1
+        },
+        {
+          "startEndFrame": [
+            15,
+            15
+          ],
+          "velocity_x": 0
+        }
+      ],
+      "cancels": [],
+      "alwaysCancelable": false,
+      "audioClip": "ForwardDash"
+    },
+    "11": {
+      "actionID": 11,
+      "actionName": "DASH_BACKWARD",
+      "type": "Movement",
+      "frameCount": 22,
+      "isLoop": false,
+      "loopFromFrame": 0,
+      "motions": [
+        {
+          "startEndFrame": [
+            0,
+            10
+          ],
+          "motionID": 40
+        },
+        {
+          "startEndFrame": [
+            11,
+            16
+          ],
+          "motionID": 41
+        },
+        {
+          "startEndFrame": [
+            17,
+            20
+          ],
+          "motionID": 42
+        },
+        {
+          "startEndFrame": [
+            21,
+            21
+          ],
+          "motionID": 43
+        }
+      ],
+      "status": [],
+      "hitboxes": [],
+      "hurtboxes": [
+        {
+          "startEndFrame": [
+            4,
+            21
+          ],
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "width": 0.9,
+            "height": 1.2
+          },
+          "useBaseRect": false
+        }
+      ],
+      "pushboxes": [
+        {
+          "startEndFrame": [
+            0,
+            21
+          ],
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "width": 0.8,
+            "height": 1
+          },
+          "useBaseRect": false
+        }
+      ],
+      "movements": [
+        {
+          "startEndFrame": [
+            0,
+            2
+          ],
+          "velocity_x": -10
+        },
+        {
+          "startEndFrame": [
+            3,
+            8
+          ],
+          "velocity_x": -5
+        },
+        {
+          "startEndFrame": [
+            9,
+            12
+          ],
+          "velocity_x": -3
+        },
+        {
+          "startEndFrame": [
+            13,
+            14
+          ],
+          "velocity_x": -1
+        },
+        {
+          "startEndFrame": [
+            15,
+            15
+          ],
+          "velocity_x": 0
+        }
+      ],
+      "cancels": [],
+      "alwaysCancelable": false,
+      "audioClip": "BackDash"
+    },
+    "100": {
+      "actionID": 100,
+      "actionName": "N_ATTACK",
+      "type": "Attack",
+      "frameCount": 22,
+      "isLoop": false,
+      "loopFromFrame": 0,
+      "motions": [
+        {
+          "startEndFrame": [
+            0,
+            1
+          ],
+          "motionID": 50
+        },
+        {
+          "startEndFrame": [
+            2,
+            3
+          ],
+          "motionID": 51
+        },
+        {
+          "startEndFrame": [
+            4,
+            15
+          ],
+          "motionID": 52
+        },
+        {
+          "startEndFrame": [
+            16,
+            19
+          ],
+          "motionID": 53
+        },
+        {
+          "startEndFrame": [
+            20,
+            21
+          ],
+          "motionID": 54
+        }
+      ],
+      "status": [
+        {
+          "startEndFrame": [
+            0,
+            4
+          ],
+          "counterHit": true
+        }
+      ],
+      "hitboxes": [
+        {
+          "startEndFrame": [
+            0,
+            5
+          ],
+          "rect": {
+            "x": 1.5,
+            "y": 0,
+            "width": 3,
+            "height": 0.4
+          },
+          "attackID": 1,
+          "proximity": true
+        },
+        {
+          "startEndFrame": [
+            4,
+            5
+          ],
+          "rect": {
+            "x": 0.9,
+            "y": 0,
+            "width": 1.8,
+            "height": 0.3
+          },
+          "attackID": 1,
+          "proximity": false
+        }
+      ],
+      "hurtboxes": [
+        {
+          "startEndFrame": [
+            0,
+            21
+          ],
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "width": 1,
+            "height": 1.2
+          },
+          "useBaseRect": true
+        },
+        {
+          "startEndFrame": [
+            4,
+            15
+          ],
+          "rect": {
+            "x": 0.8,
+            "y": 0,
+            "width": 1.6,
+            "height": 0.4
+          },
+          "useBaseRect": false
+        },
+        {
+          "startEndFrame": [
+            16,
+            18
+          ],
+          "rect": {
+            "x": 0.5,
+            "y": 0,
+            "width": 1,
+            "height": 0.4
+          },
+          "useBaseRect": false
+        }
+      ],
+      "pushboxes": [
+        {
+          "startEndFrame": [
+            0,
+            21
+          ],
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "width": 0.8,
+            "height": 1
+          },
+          "useBaseRect": true
+        }
+      ],
+      "movements": [],
+      "cancels": [
+        {
+          "startEndFrame": [
+            1,
+            3
+          ],
+          "buffer": true,
+          "execute": false,
+          "actionID": [
+            110
+          ]
+        },
+        {
+          "startEndFrame": [
+            4,
+            5
+          ],
+          "buffer": false,
+          "execute": true,
+          "actionID": [
+            110
+          ]
+        }
+      ],
+      "alwaysCancelable": false,
+      "audioClip": "Attack"
+    },
+    "105": {
+      "actionID": 105,
+      "actionName": "B_ATTACK",
+      "type": "Attack",
+      "frameCount": 21,
+      "isLoop": false,
+      "loopFromFrame": 0,
+      "motions": [
+        {
+          "startEndFrame": [
+            0,
+            0
+          ],
+          "motionID": 130
+        },
+        {
+          "startEndFrame": [
+            1,
+            2
+          ],
+          "motionID": 131
+        },
+        {
+          "startEndFrame": [
+            3,
+            15
+          ],
+          "motionID": 132
+        },
+        {
+          "startEndFrame": [
+            16,
+            19
+          ],
+          "motionID": 133
+        },
+        {
+          "startEndFrame": [
+            20,
+            20
+          ],
+          "motionID": 134
+        }
+      ],
+      "status": [
+        {
+          "startEndFrame": [
+            0,
+            3
+          ],
+          "counterHit": true
+        }
+      ],
+      "hitboxes": [
+        {
+          "startEndFrame": [
+            0,
+            5
+          ],
+          "rect": {
+            "x": 1.4,
+            "y": 0.5,
+            "width": 2.8,
+            "height": 0.4
+          },
+          "attackID": 2,
+          "proximity": true
+        },
+        {
+          "startEndFrame": [
+            3,
+            5
+          ],
+          "rect": {
+            "x": 0.8,
+            "y": 0,
+            "width": 1.6,
+            "height": 0.9
+          },
+          "attackID": 2,
+          "proximity": false
+        }
+      ],
+      "hurtboxes": [
+        {
+          "startEndFrame": [
+            0,
+            21
+          ],
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "width": 0,
+            "height": 0
+          },
+          "useBaseRect": true
+        },
+        {
+          "startEndFrame": [
+            3,
+            14
+          ],
+          "rect": {
+            "x": 0.7,
+            "y": 0,
+            "width": 1.4,
+            "height": 0.9
+          },
+          "useBaseRect": false
+        },
+        {
+          "startEndFrame": [
+            15,
+            17
+          ],
+          "rect": {
+            "x": 0.6,
+            "y": 0,
+            "width": 1.2,
+            "height": 0.9
+          },
+          "useBaseRect": false
+        }
+      ],
+      "pushboxes": [
+        {
+          "startEndFrame": [
+            0,
+            21
+          ],
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "width": 0,
+            "height": 0
+          },
+          "useBaseRect": true
+        }
+      ],
+      "movements": [],
+      "cancels": [
+        {
+          "startEndFrame": [
+            1,
+            2
+          ],
+          "buffer": true,
+          "execute": false,
+          "actionID": [
+            110
+          ]
+        },
+        {
+          "startEndFrame": [
+            3,
+            5
+          ],
+          "buffer": false,
+          "execute": true,
+          "actionID": [
+            110
+          ]
+        }
+      ],
+      "alwaysCancelable": false,
+      "audioClip": "Attack2"
+    },
+    "110": {
+      "actionID": 110,
+      "actionName": "N_SPECIAL",
+      "type": "Attack",
+      "frameCount": 44,
+      "isLoop": false,
+      "loopFromFrame": 0,
+      "motions": [
+        {
+          "startEndFrame": [
+            0,
+            2
+          ],
+          "motionID": 60
+        },
+        {
+          "startEndFrame": [
+            3,
+            4
+          ],
+          "motionID": 61
+        },
+        {
+          "startEndFrame": [
+            5,
+            7
+          ],
+          "motionID": 62
+        },
+        {
+          "startEndFrame": [
+            8,
+            9
+          ],
+          "motionID": 63
+        },
+        {
+          "startEndFrame": [
+            10,
+            10
+          ],
+          "motionID": 64
+        },
+        {
+          "startEndFrame": [
+            11,
+            25
+          ],
+          "motionID": 65
+        },
+        {
+          "startEndFrame": [
+            26,
+            40
+          ],
+          "motionID": 66
+        },
+        {
+          "startEndFrame": [
+            41,
+            43
+          ],
+          "motionID": 67
+        }
+      ],
+      "status": [
+        {
+          "startEndFrame": [
+            0,
+            10
+          ],
+          "counterHit": true
+        }
+      ],
+      "hitboxes": [
+        {
+          "startEndFrame": [
+            0,
+            14
+          ],
+          "rect": {
+            "x": 1.5,
+            "y": 0.8,
+            "width": 3,
+            "height": 0.2
+          },
+          "attackID": 10,
+          "proximity": true
+        },
+        {
+          "startEndFrame": [
+            11,
+            14
+          ],
+          "rect": {
+            "x": 1,
+            "y": 0.75,
+            "width": 2,
+            "height": 0.3
+          },
+          "attackID": 10,
+          "proximity": false
+        }
+      ],
+      "hurtboxes": [
+        {
+          "startEndFrame": [
+            0,
+            43
+          ],
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "width": 1,
+            "height": 1.2
+          },
+          "useBaseRect": true
+        },
+        {
+          "startEndFrame": [
+            10,
+            25
+          ],
+          "rect": {
+            "x": 0.8,
+            "y": 0.7,
+            "width": 1.6,
+            "height": 0.4
+          },
+          "useBaseRect": false
+        },
+        {
+          "startEndFrame": [
+            26,
+            28
+          ],
+          "rect": {
+            "x": 0.7,
+            "y": 0.7,
+            "width": 1.4,
+            "height": 0.4
+          },
+          "useBaseRect": false
+        }
+      ],
+      "pushboxes": [
+        {
+          "startEndFrame": [
+            0,
+            43
+          ],
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "width": 0.8,
+            "height": 1
+          },
+          "useBaseRect": true
+        }
+      ],
+      "movements": [
+        {
+          "startEndFrame": [
+            0,
+            3
+          ],
+          "velocity_x": 2
+        },
+        {
+          "startEndFrame": [
+            4,
+            15
+          ],
+          "velocity_x": 5
+        },
+        {
+          "startEndFrame": [
+            16,
+            17
+          ],
+          "velocity_x": 2
+        },
+        {
+          "startEndFrame": [
+            18,
+            20
+          ],
+          "velocity_x": 1
+        },
+        {
+          "startEndFrame": [
+            21,
+            21
+          ],
+          "velocity_x": 0
+        }
+      ],
+      "cancels": [],
+      "alwaysCancelable": false,
+      "audioClip": "N_Special"
+    },
+    "115": {
+      "actionID": 115,
+      "actionName": "B_SPECIAL",
+      "type": "Attack",
+      "frameCount": 55,
+      "isLoop": false,
+      "loopFromFrame": 0,
+      "motions": [
+        {
+          "startEndFrame": [
+            0,
+            0
+          ],
+          "motionID": 140
+        },
+        {
+          "startEndFrame": [
+            1,
+            1
+          ],
+          "motionID": 141
+        },
+        {
+          "startEndFrame": [
+            2,
+            5
+          ],
+          "motionID": 142
+        },
+        {
+          "startEndFrame": [
+            6,
+            35
+          ],
+          "motionID": 143
+        },
+        {
+          "startEndFrame": [
+            36,
+            45
+          ],
+          "motionID": 144
+        },
+        {
+          "startEndFrame": [
+            46,
+            52
+          ],
+          "motionID": 145
+        },
+        {
+          "startEndFrame": [
+            53,
+            54
+          ],
+          "motionID": 146
+        }
+      ],
+      "status": [],
+      "hitboxes": [
+        {
+          "startEndFrame": [
+            0,
+            5
+          ],
+          "rect": {
+            "x": 1.5,
+            "y": 0.4,
+            "width": 3,
+            "height": 0.3
+          },
+          "attackID": 11,
+          "proximity": true
+        },
+        {
+          "startEndFrame": [
+            2,
+            7
+          ],
+          "rect": {
+            "x": 0.6,
+            "y": 0,
+            "width": 1.2,
+            "height": 1
+          },
+          "attackID": 11,
+          "proximity": false
+        }
+      ],
+      "hurtboxes": [
+        {
+          "startEndFrame": [
+            6,
+            54
+          ],
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "width": 0,
+            "height": 0
+          },
+          "useBaseRect": true
+        }
+      ],
+      "pushboxes": [
+        {
+          "startEndFrame": [
+            0,
+            54
+          ],
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "width": 0,
+            "height": 0
+          },
+          "useBaseRect": true
+        }
+      ],
+      "movements": [
+        {
+          "startEndFrame": [
+            0,
+            2
+          ],
+          "velocity_x": 3
+        },
+        {
+          "startEndFrame": [
+            0,
+            10
+          ],
+          "velocity_x": 2
+        },
+        {
+          "startEndFrame": [
+            10,
+            15
+          ],
+          "velocity_x": 1
+        },
+        {
+          "startEndFrame": [
+            16,
+            16
+          ],
+          "velocity_x": 0
+        }
+      ],
+      "cancels": [],
+      "alwaysCancelable": false,
+      "audioClip": "B_Special_1"
+    },
+    "200": {
+      "actionID": 200,
+      "actionName": "DAMAGE",
+      "type": "Damage",
+      "frameCount": 17,
+      "isLoop": false,
+      "loopFromFrame": 0,
+      "motions": [
+        {
+          "startEndFrame": [
+            0,
+            8
+          ],
+          "motionID": 70
+        },
+        {
+          "startEndFrame": [
+            9,
+            12
+          ],
+          "motionID": 71
+        },
+        {
+          "startEndFrame": [
+            13,
+            15
+          ],
+          "motionID": 72
+        },
+        {
+          "startEndFrame": [
+            16,
+            16
+          ],
+          "motionID": 73
+        }
+      ],
+      "status": [],
+      "hitboxes": [],
+      "hurtboxes": [
+        {
+          "startEndFrame": [
+            0,
+            16
+          ],
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "width": 1,
+            "height": 1.2
+          },
+          "useBaseRect": true
+        }
+      ],
+      "pushboxes": [
+        {
+          "startEndFrame": [
+            0,
+            16
+          ],
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "width": 0.8,
+            "height": 1
+          },
+          "useBaseRect": true
+        }
+      ],
+      "movements": [
+        {
+          "startEndFrame": [
+            0,
+            3
+          ],
+          "velocity_x": -3
+        },
+        {
+          "startEndFrame": [
+            4,
+            8
+          ],
+          "velocity_x": -2
+        },
+        {
+          "startEndFrame": [
+            9,
+            12
+          ],
+          "velocity_x": -0.5
+        },
+        {
+          "startEndFrame": [
+            13,
+            13
+          ],
+          "velocity_x": 0
+        }
+      ],
+      "cancels": [],
+      "alwaysCancelable": false,
+      "audioClip": "Normal_Hit"
+    },
+    "301": {
+      "actionID": 301,
+      "actionName": "GUARD_M",
+      "type": "Guard",
+      "frameCount": 23,
+      "isLoop": false,
+      "loopFromFrame": 0,
+      "motions": [
+        {
+          "startEndFrame": [
+            0,
+            14
+          ],
+          "motionID": 101
+        },
+        {
+          "startEndFrame": [
+            15,
+            22
+          ],
+          "motionID": 100
+        }
+      ],
+      "status": [],
+      "hitboxes": [],
+      "hurtboxes": [
+        {
+          "startEndFrame": [
+            0,
+            29
+          ],
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "width": 1,
+            "height": 1.2
+          },
+          "useBaseRect": true
+        }
+      ],
+      "pushboxes": [
+        {
+          "startEndFrame": [
+            0,
+            29
+          ],
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "width": 0.8,
+            "height": 1
+          },
+          "useBaseRect": true
+        }
+      ],
+      "movements": [
+        {
+          "startEndFrame": [
+            0,
+            6
+          ],
+          "velocity_x": -3
+        },
+        {
+          "startEndFrame": [
+            7,
+            10
+          ],
+          "velocity_x": -2
+        },
+        {
+          "startEndFrame": [
+            11,
+            15
+          ],
+          "velocity_x": -0.5
+        },
+        {
+          "startEndFrame": [
+            16,
+            16
+          ],
+          "velocity_x": 0
+        }
+      ],
+      "cancels": [],
+      "alwaysCancelable": false,
+      "audioClip": "Guard"
+    },
+    "305": {
+      "actionID": 305,
+      "actionName": "GUARD_STAND",
+      "type": "Guard",
+      "frameCount": 15,
+      "isLoop": false,
+      "loopFromFrame": 0,
+      "motions": [
+        {
+          "startEndFrame": [
+            0,
+            10
+          ],
+          "motionID": 101
+        },
+        {
+          "startEndFrame": [
+            11,
+            14
+          ],
+          "motionID": 100
+        }
+      ],
+      "status": [],
+      "hitboxes": [],
+      "hurtboxes": [
+        {
+          "startEndFrame": [
+            0,
+            14
+          ],
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "width": 1,
+            "height": 1.2
+          },
+          "useBaseRect": true
+        }
+      ],
+      "pushboxes": [
+        {
+          "startEndFrame": [
+            0,
+            14
+          ],
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "width": 0.8,
+            "height": 1
+          },
+          "useBaseRect": true
+        }
+      ],
+      "movements": [
+        {
+          "startEndFrame": [
+            0,
+            3
+          ],
+          "velocity_x": -2
+        },
+        {
+          "startEndFrame": [
+            4,
+            6
+          ],
+          "velocity_x": -1
+        },
+        {
+          "startEndFrame": [
+            7,
+            8
+          ],
+          "velocity_x": -0.5
+        },
+        {
+          "startEndFrame": [
+            9,
+            9
+          ],
+          "velocity_x": 0
+        }
+      ],
+      "cancels": [],
+      "alwaysCancelable": false,
+      "audioClip": "Guard"
+    },
+    "306": {
+      "actionID": 306,
+      "actionName": "GUARD_CROUCH",
+      "type": "Guard",
+      "frameCount": 15,
+      "isLoop": false,
+      "loopFromFrame": 0,
+      "motions": [
+        {
+          "startEndFrame": [
+            0,
+            10
+          ],
+          "motionID": 111
+        },
+        {
+          "startEndFrame": [
+            11,
+            14
+          ],
+          "motionID": 110
+        }
+      ],
+      "status": [],
+      "hitboxes": [],
+      "hurtboxes": [
+        {
+          "startEndFrame": [
+            0,
+            14
+          ],
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "width": 1,
+            "height": 1.2
+          },
+          "useBaseRect": true
+        }
+      ],
+      "pushboxes": [
+        {
+          "startEndFrame": [
+            0,
+            14
+          ],
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "width": 0.8,
+            "height": 1
+          },
+          "useBaseRect": true
+        }
+      ],
+      "movements": [
+        {
+          "startEndFrame": [
+            0,
+            3
+          ],
+          "velocity_x": -2
+        },
+        {
+          "startEndFrame": [
+            4,
+            6
+          ],
+          "velocity_x": -1
+        },
+        {
+          "startEndFrame": [
+            7,
+            8
+          ],
+          "velocity_x": -0.5
+        },
+        {
+          "startEndFrame": [
+            9,
+            9
+          ],
+          "velocity_x": 0
+        }
+      ],
+      "cancels": [],
+      "alwaysCancelable": false,
+      "audioClip": "Guard"
+    },
+    "310": {
+      "actionID": 310,
+      "actionName": "GUARD_BREAK",
+      "type": "Damage",
+      "frameCount": 36,
+      "isLoop": false,
+      "loopFromFrame": 0,
+      "motions": [
+        {
+          "startEndFrame": [
+            0,
+            30
+          ],
+          "motionID": 120
+        },
+        {
+          "startEndFrame": [
+            31,
+            35
+          ],
+          "motionID": 121
+        }
+      ],
+      "status": [],
+      "hitboxes": [],
+      "hurtboxes": [
+        {
+          "startEndFrame": [
+            0,
+            35
+          ],
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "width": 1.2,
+            "height": 1.2
+          },
+          "useBaseRect": false
+        }
+      ],
+      "pushboxes": [
+        {
+          "startEndFrame": [
+            0,
+            35
+          ],
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "width": 0.8,
+            "height": 1
+          },
+          "useBaseRect": true
+        }
+      ],
+      "movements": [
+        {
+          "startEndFrame": [
+            0,
+            3
+          ],
+          "velocity_x": -2
+        },
+        {
+          "startEndFrame": [
+            4,
+            6
+          ],
+          "velocity_x": -1
+        },
+        {
+          "startEndFrame": [
+            7,
+            10
+          ],
+          "velocity_x": -0.5
+        },
+        {
+          "startEndFrame": [
+            11,
+            11
+          ],
+          "velocity_x": 0
+        }
+      ],
+      "cancels": [],
+      "alwaysCancelable": false,
+      "audioClip": "GuardBreak_1"
+    },
+    "350": {
+      "actionID": 350,
+      "actionName": "GUARD_PROXIMITY",
+      "type": "Guard",
+      "frameCount": 1,
+      "isLoop": false,
+      "loopFromFrame": 0,
+      "motions": [
+        {
+          "startEndFrame": [
+            0,
+            0
+          ],
+          "motionID": 100
+        }
+      ],
+      "status": [],
+      "hitboxes": [],
+      "hurtboxes": [
+        {
+          "startEndFrame": [
+            0,
+            0
+          ],
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "width": 1,
+            "height": 1.2
+          },
+          "useBaseRect": true
+        }
+      ],
+      "pushboxes": [
+        {
+          "startEndFrame": [
+            0,
+            0
+          ],
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "width": 0.8,
+            "height": 1
+          },
+          "useBaseRect": true
+        }
+      ],
+      "movements": [],
+      "cancels": [],
+      "alwaysCancelable": true,
+      "audioClip": null
+    },
+    "500": {
+      "actionID": 500,
+      "actionName": "DEAD",
+      "type": "Damage",
+      "frameCount": 500,
+      "isLoop": false,
+      "loopFromFrame": 0,
+      "motions": [
+        {
+          "startEndFrame": [
+            0,
+            9
+          ],
+          "motionID": 80
+        },
+        {
+          "startEndFrame": [
+            10,
+            19
+          ],
+          "motionID": 81
+        },
+        {
+          "startEndFrame": [
+            20,
+            29
+          ],
+          "motionID": 82
+        },
+        {
+          "startEndFrame": [
+            30,
+            39
+          ],
+          "motionID": 83
+        },
+        {
+          "startEndFrame": [
+            40,
+            49
+          ],
+          "motionID": 84
+        },
+        {
+          "startEndFrame": [
+            50,
+            59
+          ],
+          "motionID": 85
+        },
+        {
+          "startEndFrame": [
+            60,
+            69
+          ],
+          "motionID": 86
+        },
+        {
+          "startEndFrame": [
+            70,
+            499
+          ],
+          "motionID": 87
+        }
+      ],
+      "status": [],
+      "hitboxes": [],
+      "hurtboxes": [
+        {
+          "startEndFrame": [
+            0,
+            20
+          ],
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "width": 1,
+            "height": 1.2
+          },
+          "useBaseRect": true
+        },
+        {
+          "startEndFrame": [
+            21,
+            500
+          ],
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "width": 1,
+            "height": 0.5
+          },
+          "useBaseRect": false
+        }
+      ],
+      "pushboxes": [
+        {
+          "startEndFrame": [
+            0,
+            9
+          ],
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "width": 2,
+            "height": 1
+          },
+          "useBaseRect": false
+        },
+        {
+          "startEndFrame": [
+            10,
+            20
+          ],
+          "rect": {
+            "x": -0.25,
+            "y": 0,
+            "width": 2,
+            "height": 1
+          },
+          "useBaseRect": false
+        },
+        {
+          "startEndFrame": [
+            21,
+            500
+          ],
+          "rect": {
+            "x": -0.5,
+            "y": 0,
+            "width": 2.5,
+            "height": 0.5
+          },
+          "useBaseRect": false
+        }
+      ],
+      "movements": [
+        {
+          "startEndFrame": [
+            0,
+            19
+          ],
+          "velocity_x": -4
+        },
+        {
+          "startEndFrame": [
+            20,
+            39
+          ],
+          "velocity_x": -3
+        },
+        {
+          "startEndFrame": [
+            40,
+            49
+          ],
+          "velocity_x": -1
+        },
+        {
+          "startEndFrame": [
+            50,
+            50
+          ],
+          "velocity_x": 0
+        }
+      ],
+      "cancels": [],
+      "alwaysCancelable": false,
+      "audioClip": "Special_Hit_1"
+    },
+    "510": {
+      "actionID": 510,
+      "actionName": "WIN",
+      "type": "Movement",
+      "frameCount": 33,
+      "isLoop": true,
+      "loopFromFrame": 5,
+      "motions": [
+        {
+          "startEndFrame": [
+            0,
+            4
+          ],
+          "motionID": 200
+        },
+        {
+          "startEndFrame": [
+            5,
+            8
+          ],
+          "motionID": 201
+        },
+        {
+          "startEndFrame": [
+            9,
+            12
+          ],
+          "motionID": 202
+        },
+        {
+          "startEndFrame": [
+            13,
+            16
+          ],
+          "motionID": 203
+        },
+        {
+          "startEndFrame": [
+            17,
+            20
+          ],
+          "motionID": 204
+        },
+        {
+          "startEndFrame": [
+            21,
+            24
+          ],
+          "motionID": 205
+        },
+        {
+          "startEndFrame": [
+            25,
+            28
+          ],
+          "motionID": 206
+        },
+        {
+          "startEndFrame": [
+            29,
+            32
+          ],
+          "motionID": 207
+        }
+      ],
+      "status": [],
+      "hitboxes": [],
+      "hurtboxes": [
+        {
+          "startEndFrame": [
+            0,
+            32
+          ],
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "width": 0,
+            "height": 0
+          },
+          "useBaseRect": true
+        }
+      ],
+      "pushboxes": [
+        {
+          "startEndFrame": [
+            0,
+            32
+          ],
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "width": 0,
+            "height": 0
+          },
+          "useBaseRect": true
+        }
+      ],
+      "movements": [],
+      "cancels": [],
+      "alwaysCancelable": false,
+      "audioClip": null
+    }
+  },
+  "attacks": {
+    "1": {
+      "attackID": 1,
+      "attackName": "N_ATTACK",
+      "damageActionID": 200,
+      "guardActionID": 306,
+      "numberOfHit": 1,
+      "vitalHealthDamage": 0,
+      "guardHealthDamage": 1,
+      "hitStunFrame": 12,
+      "guardStunFrame": 12,
+      "guardBreakStunFrame": 30
+    },
+    "2": {
+      "attackID": 2,
+      "attackName": "B_ATTACK",
+      "damageActionID": 200,
+      "guardActionID": 305,
+      "numberOfHit": 1,
+      "vitalHealthDamage": 0,
+      "guardHealthDamage": 1,
+      "hitStunFrame": 12,
+      "guardStunFrame": 12,
+      "guardBreakStunFrame": 30
+    },
+    "10": {
+      "attackID": 10,
+      "attackName": "N_SPECIAL",
+      "damageActionID": 500,
+      "guardActionID": 301,
+      "numberOfHit": 1,
+      "vitalHealthDamage": 1,
+      "guardHealthDamage": 1,
+      "hitStunFrame": 0,
+      "guardStunFrame": 15,
+      "guardBreakStunFrame": 30
+    },
+    "11": {
+      "attackID": 11,
+      "attackName": "B_SPECIAL",
+      "damageActionID": 500,
+      "guardActionID": 301,
+      "numberOfHit": 1,
+      "vitalHealthDamage": 1,
+      "guardHealthDamage": 1,
+      "hitStunFrame": 0,
+      "guardStunFrame": 15,
+      "guardBreakStunFrame": 30
+    }
+  }
+}

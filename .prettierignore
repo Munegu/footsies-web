@@ -5,3 +5,4 @@ LICENSE
 package-lock.json
 CLAUDE.md
 SPECS.md
+src/data/*.json

@@ -23,13 +23,21 @@ jamais. Version de référence : commit `08c293961bd0420ed7cdf26afa2fa032b6f98b7
 
 ## Commandes
 
-| Commande            | Rôle                           |
-| ------------------- | ------------------------------ |
-| `npm run dev`       | Serveur de développement       |
-| `npm run build`     | Vérification des types + build |
-| `npm test`          | Tests Vitest                   |
-| `npm run lint`      | ESLint                         |
-| `npm run format`    | Prettier                       |
-| `npm run typecheck` | `tsc --noEmit`                 |
+| Commande            | Rôle                                   |
+| ------------------- | -------------------------------------- |
+| `npm run dev`       | Serveur de développement               |
+| `npm run build`     | Vérification des types + build         |
+| `npm test`          | Tests Vitest                           |
+| `npm run lint`      | ESLint                                 |
+| `npm run format`    | Prettier                               |
+| `npm run typecheck` | `tsc --noEmit`                         |
+| `npm run extract`   | Régénère `src/data/` depuis l'original |
+
+## Données extraites
+
+`npm run extract` lit l'original (`vendor/`) et produit dans `src/data/` : `f00.json` (frame data),
+`f00-atlas.png` + `f00-sprites.json` (sprites), `art/` (décor, effets) et `audio/` (`.mp3`). Ces
+fichiers sont versionnés : le site déployé n'a pas besoin de `vendor/`. La conversion audio demande
+`ffmpeg` (`brew install ffmpeg`).
 
 Specs complètes : `SPECS.md`.
