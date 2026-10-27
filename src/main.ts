@@ -5,6 +5,16 @@ import { GameAudio } from './audio/game-audio.ts';
 import { loadAudio } from './audio/loader.ts';
 import { createBattle, stepBattle, type BattleState } from './engine/battle.ts';
 import { buildFighterData } from './engine/fighter-data.ts';
+import {
+  BUTTON,
+  GamepadPoller,
+  assignPads,
+  mergePadInput,
+  padOfSlot,
+  padStatusText,
+  type PadSlots,
+  type PadSnapshot,
+} from './input/gamepad.ts';
 import { attachKeyboard } from './input/keyboard.ts';
 import { InputState } from './input/input-state.ts';
 import { loadSettings, saveSettings, type Settings } from './input/settings.ts';
@@ -16,7 +26,7 @@ import { BattleView } from './render/view.ts';
 import { createApp, reduce, type AppEffect, type AppEvent, type Mode } from './ui/app.ts';
 import { hitAt } from './ui/hit-test.ts';
 import { createRepeater, stepRepeater } from './ui/menu.ts';
-import { sampleMenuInput } from './ui/menu-input.ts';
+import { mergeMenuInput, padMenuInput, padStartPressed, sampleMenuInput } from './ui/menu-input.ts';
 import { drawOptions } from './ui/options-screen.ts';
 import { drawPause } from './ui/pause.ts';
 import { clientToRef } from './ui/pointer.ts';
@@ -107,6 +117,13 @@ let battle: BattleState | null = null;
 let view: BattleView | null = null;
 let cpu: CpuPlayer | null = null;
 let pressedId: string | null = null;
+
+// Manettes : lues à chaque tick ; attribuées à J1 puis J2 dans l'ordre de connexion.
+const gamepads = new GamepadPoller(() => navigator.getGamepads());
+let padSlots: PadSlots = [null, null];
+let pads: PadSnapshot[] = [];
+let prevPad: [PadSnapshot | null, PadSnapshot | null] = [null, null];
+const padAttackBlocked: [boolean, boolean] = [false, false];
 const repeater = createRepeater();
 const hRepeater = createRepeater();
 
@@ -123,6 +140,7 @@ function startBattle(mode: Mode): void {
   // Une touche encore enfoncée (Entrée, Espace) ne doit pas déclencher d'action en combat.
   input.releaseAll();
   stepper.reset();
+  padAttackBlocked[0] = padAttackBlocked[1] = true;
   audio?.playMenuSelect(); // GameManager.LoadBattleScene
 }
 
@@ -134,6 +152,7 @@ function apply(effect: AppEffect): void {
     case 'resumeBattle':
       input.releaseAll();
       stepper.reset();
+      padAttackBlocked[0] = padAttackBlocked[1] = true;
       break;
     case 'quitBattle':
       battle = null;
@@ -190,17 +209,55 @@ canvas.addEventListener('mouseup', (e) => {
   pressedId = null;
 });
 
+/** Lit les manettes et met à jour leur attribution (J1, J2) : une lecture par tick. */
+function readPads(): { pad1: PadSnapshot | null; pad2: PadSnapshot | null } {
+  pads = gamepads.poll();
+  padSlots = assignPads(padSlots, pads);
+  return { pad1: padOfSlot(padSlots, 0, pads), pad2: padOfSlot(padSlots, 1, pads) };
+}
+
+/**
+ * Le bouton A tenu au moment d'entrer en combat (celui qui a validé « VS CPU ») ne doit pas être
+ * pris pour une attaque : on l'ignore jusqu'à son relâchement.
+ */
+function withoutHeldAttack(pad: PadSnapshot | null, slot: 0 | 1): PadSnapshot | null {
+  if (!pad || !padAttackBlocked[slot]) return pad;
+  if (pad.buttons[BUTTON.A] !== true) {
+    padAttackBlocked[slot] = false;
+    return pad;
+  }
+  return { ...pad, buttons: pad.buttons.map((pressed, i) => (i === BUTTON.A ? false : pressed)) };
+}
+
 /** Un tick de logique (50 Hz) : le combat, ou la navigation des menus. */
 function tick(): void {
+  const { pad1, pad2 } = readPads();
+  try {
+    tickScreen(pad1, pad2);
+  } finally {
+    prevPad = [pad1, pad2];
+  }
+}
+
+function tickScreen(pad1: PadSnapshot | null, pad2: PadSnapshot | null): void {
   if (app.screen === 'battle' && battle && view) {
-    // Échap ouvre la pause (l'original revenait directement au titre).
-    if (input.wasPressed('Escape')) {
+    // Échap ou Start ouvre la pause (l'original revenait directement au titre).
+    if (
+      input.wasPressed('Escape') ||
+      padStartPressed(prevPad[0], pad1) ||
+      padStartPressed(prevPad[1], pad2)
+    ) {
       input.clearPressed();
       dispatch({ kind: 'cancel' });
       return;
     }
-    const sampled = input.sample();
-    // Contre le CPU, les touches de J2 sont ignorées (mais `skip` garde le Attack physique).
+    // Clavier et manettes se combinent ; contre le CPU, J2 est piloté par l'IA (mais `skip`
+    // garde le Attack physique des deux joueurs).
+    const sampled = mergePadInput(
+      input.sample(),
+      withoutHeldAttack(pad1, 0),
+      withoutHeldAttack(pad2, 1),
+    );
     stepBattle(battle, data, cpu ? { ...sampled, p2: cpuInput(cpu, battle) } : sampled);
     if (cpu) cpuObserve(cpu, battle.events);
     audio?.playEvents(battle.events);
@@ -215,7 +272,8 @@ function tick(): void {
       input.clearPressed();
       return;
     }
-    const m = sampleMenuInput(input);
+    // Seule la manette 1 pilote les menus (InputManager.cs).
+    const m = mergeMenuInput(sampleMenuInput(input), padMenuInput(prevPad[0], pad1));
     const fired = stepRepeater(repeater, m.dir);
     if (fired !== 0) dispatch({ kind: 'move', delta: fired });
     const adjust = stepRepeater(hRepeater, app.screen === 'options' ? m.hdir : 0);
@@ -253,7 +311,15 @@ function draw(): void {
       });
       break;
     case 'options':
-      drawOptions(context, scale, assets.ui, app.options, app.settings, keyboardLayout);
+      drawOptions(
+        context,
+        scale,
+        assets.ui,
+        app.options,
+        app.settings,
+        keyboardLayout,
+        padStatusText(padSlots, pads, gamepads.isDisabled),
+      );
       break;
     case 'battle':
     case 'pause':

@@ -105,7 +105,8 @@ export function drawOptions(
   ui: Atlas,
   options: OptionsState,
   settings: Settings,
-  layout?: ReadonlyMap<string, string> | null,
+  layout: ReadonlyMap<string, string> | null,
+  padStatus: string,
 ): void {
   ctx.setTransform(scale, 0, 0, scale, 0, 0);
   ctx.imageSmoothingEnabled = false;
@@ -119,6 +120,13 @@ export function drawOptions(
   ctx.fillText('OPTIONS', REF_WIDTH / 2, 60);
   ctx.font = '28px monospace';
   ctx.fillText(messageText(options.message, layout), REF_WIDTH / 2, 112);
+
+  // État des manettes, sous la dernière ligne.
+  ctx.fillStyle = '#000000';
+  ctx.font = '24px monospace';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(padStatus, REF_WIDTH / 2, 886);
 
   const selected = selectedId(options.menu);
   for (const [i, id] of OPTION_ITEMS.entries()) {

@@ -48,6 +48,12 @@ touches physiques (`KeyboardEvent.code`) : l'écran d'options affiche ce qui est
 clavier (la touche « A » de J1 s'affiche « Q » sur un clavier AZERTY). `F12` affiche / masque les
 boxes et la frame data.
 
+**Manettes :** branchées dans l'ordre de connexion (la première est J1, la seconde J2). Croix ou
+stick gauche pour se déplacer, `A` pour attaquer, `Start` pour la pause. Dans les menus, la
+manette 1 navigue à la croix ou au stick, `A` valide, `B` ou `Start` reviennent en arrière. Une
+manette n'est détectée qu'après un premier appui sur un bouton (règle des navigateurs) ;
+l'écran d'options indique les manettes reconnues.
+
 **Menus :** haut / bas ou `W` / `S`, gauche / droite pour régler les curseurs, validation
 `Entrée` ou `Espace`, ou la souris. `Échap` ouvre
 la pause en combat. Le son démarre à la première touche ou au premier clic (règle des
