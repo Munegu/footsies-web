@@ -3,3 +3,4 @@ dist/
 vendor/
 .DS_Store
 *.log
+CLAUDE.md
