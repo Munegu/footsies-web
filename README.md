@@ -41,7 +41,8 @@ jamais. Version de référence : commit `08c293961bd0420ed7cdf26afa2fa032b6f98b7
 | J2  | `←`    | `→`    | `Maj` droite |
 
 Touches physiques (`KeyboardEvent.code`) : sur un clavier AZERTY, la touche de J1 « A » est
-la touche `Q`. `F12` affiche / masque les boxes et la frame data.
+la touche `Q`. `F12` affiche / masque les boxes et la frame data, `M` coupe / rétablit la
+musique. Le son démarre à la première touche ou au premier clic (règle des navigateurs).
 
 ## Modes (provisoires)
 

@@ -1,6 +1,8 @@
 import f00 from './data/f00.json';
 import type { FighterJson } from './data/types.ts';
 import { createCpu, cpuInput, cpuObserve } from './ai/cpu.ts';
+import { GameAudio } from './audio/game-audio.ts';
+import { loadAudio } from './audio/loader.ts';
 import { createBattle, stepBattle } from './engine/battle.ts';
 import { buildFighterData } from './engine/fighter-data.ts';
 import { attachKeyboard } from './input/keyboard.ts';
@@ -32,9 +34,27 @@ const seed =
 const cpu = params.get('mode') === '2p' ? null : createCpu(seed);
 if (cpu) console.info(`VS CPU, graine ${seed} (ajouter ?seed=${seed} à l'URL pour rejouer)`);
 
+// Audio : le contexte est créé tout de suite (suspendu), le son démarre à la première interaction.
+let audio: GameAudio | null = null;
+try {
+  const audioContext = new AudioContext();
+  audio = new GameAudio(audioContext, await loadAudio(audioContext));
+  audioContext.addEventListener('statechange', () => console.info(`Audio : ${audioContext.state}`));
+} catch (e) {
+  console.warn('Audio indisponible', e);
+}
+const unlockAudio = (): void => audio?.unlock();
+window.addEventListener('keydown', unlockAudio);
+window.addEventListener('pointerdown', unlockAudio);
+document.addEventListener('visibilitychange', () =>
+  document.hidden ? audio?.suspend() : audio?.wake(),
+);
+
 const input = new InputState();
-attachKeyboard(input, (code) => {
+attachKeyboard(input, (code, key) => {
   if (code === 'F12') showDebug = !showDebug;
+  // Provisoire (équivalent du bouton « Sound » du titre, remplacé à l'étape 8).
+  if (key.toLowerCase() === 'm') audio?.toggleMusic();
 });
 
 /**
@@ -66,6 +86,7 @@ function frame(now: number): void {
     // Contre le CPU, les touches de J2 sont ignorées (mais `skip` garde le Attack physique).
     stepBattle(battle, data, cpu ? { ...sampled, p2: cpuInput(cpu, battle) } : sampled);
     if (cpu) cpuObserve(cpu, battle.events);
+    audio?.playEvents(battle.events);
     view.onTick(battle, data);
     // En attendant l'écran titre (étape 8) : on relance un match à la fin de celui-ci.
     if (battle.matchOver) {

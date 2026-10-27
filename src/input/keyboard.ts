@@ -14,15 +14,19 @@ const PREVENT_DEFAULT = new Set([
 
 /**
  * Branche les événements clavier sur un `InputState`.
- * `onKeyDown` reçoit les appuis hors répétition automatique (touches de debug, menus...).
+ * `onKeyDown` reçoit les appuis hors répétition automatique (touches de debug, menus...) : le code
+ * physique et le caractère produit (pour les raccourcis qui doivent suivre le clavier de l'utilisateur).
  * Renvoie une fonction qui débranche tout.
  */
-export function attachKeyboard(state: InputState, onKeyDown?: (code: string) => void): () => void {
+export function attachKeyboard(
+  state: InputState,
+  onKeyDown?: (code: string, key: string) => void,
+): () => void {
   const down = (e: KeyboardEvent): void => {
     if (PREVENT_DEFAULT.has(e.code)) e.preventDefault();
     if (e.repeat) return;
     state.keyDown(e.code);
-    onKeyDown?.(e.code);
+    onKeyDown?.(e.code, e.key);
   };
   const up = (e: KeyboardEvent): void => state.keyUp(e.code);
   const release = (): void => state.releaseAll();
