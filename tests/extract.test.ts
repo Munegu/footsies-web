@@ -3,7 +3,9 @@ import { PNG } from 'pngjs';
 import { describe, expect, it } from 'vitest';
 import fighterJson from '../src/data/f00.json';
 import spritesJson from '../src/data/f00-sprites.json';
-import type { FighterJson, SpritesJson } from '../src/data/types.ts';
+import uiAnimationsJson from '../src/data/ui-animations.json';
+import uiSpritesJson from '../src/data/ui-sprites.json';
+import type { FighterJson, SpritesJson, UiAnimationsJson } from '../src/data/types.ts';
 import { decodeActionIds, parseUnityYaml } from '../scripts/lib/unity.ts';
 
 const data = fighterJson as unknown as FighterJson;
@@ -182,5 +184,126 @@ describe('audio', () => {
 
   it('la musique est présente', () => {
     expect(existsSync(new URL('../src/data/audio/bgm/Footsies.mp3', import.meta.url))).toBe(true);
+  });
+});
+
+describe("atlas d'interface et animations", () => {
+  const ui = uiSpritesJson as unknown as SpritesJson;
+  const clips = (uiAnimationsJson as unknown as UiAnimationsJson).clips;
+  const atlasPng = PNG.sync.read(
+    readFileSync(new URL('../src/data/ui-atlas.png', import.meta.url)),
+  );
+
+  const size = (name: string) => {
+    const s = ui.sprites[name];
+    if (!s) throw new Error(`sprite ${name} absente`);
+    return [s.w, s.h];
+  };
+
+  it("contient les 18 sprites de l'interface, avec leurs tailles d'origine", () => {
+    expect(Object.keys(ui.sprites)).toHaveLength(18);
+    expect(size('BG')).toEqual([160, 90]);
+    expect(size('Battle_Window')).toEqual([155, 65]);
+    expect(size('Logo')).toEqual([50, 15]);
+    expect(size('Guard')).toEqual([10, 10]);
+    expect(size('Round_Empty')).toEqual([8, 8]);
+    expect(size('Round_Won')).toEqual([8, 8]);
+    expect(size('P1_Label')).toEqual([10, 7]);
+    expect(size('P2_Label')).toEqual([10, 7]);
+    for (let i = 0; i < 4; i++) expect(size(`UI_${i}`)).toEqual([50, 10]);
+    for (let i = 0; i < 6; i++) expect(size(`HitEffect_${i}`)).toEqual([15, 15]);
+  });
+
+  it("chaque sprite, marge de 1 px comprise, tient dans l'atlas sans en chevaucher un autre", () => {
+    const rects = Object.values(ui.sprites);
+    for (const r of rects) {
+      expect(r.x).toBeGreaterThanOrEqual(1);
+      expect(r.y).toBeGreaterThanOrEqual(1);
+      expect(r.x + r.w + 1).toBeLessThanOrEqual(ui.atlas.width);
+      expect(r.y + r.h + 1).toBeLessThanOrEqual(ui.atlas.height);
+    }
+    for (const a of rects) {
+      for (const b of rects) {
+        if (a === b) continue;
+        const apart =
+          a.x + a.w + 1 <= b.x ||
+          b.x + b.w + 1 <= a.x ||
+          a.y + a.h + 1 <= b.y ||
+          b.y + b.h + 1 <= a.y;
+        expect(apart).toBe(true);
+      }
+    }
+    expect([atlasPng.width, atlasPng.height]).toEqual([ui.atlas.width, ui.atlas.height]);
+  });
+
+  it("la marge autour d'un sprite est transparente", () => {
+    const alphaAt = (x: number, y: number) => atlasPng.data[(y * atlasPng.width + x) * 4 + 3];
+    const g = ui.sprites['Guard'];
+    if (!g) throw new Error('Guard absent');
+    for (let i = -1; i <= g.w; i++) {
+      expect(alphaAt(g.x + i, g.y - 1)).toBe(0);
+      expect(alphaAt(g.x + i, g.y + g.h)).toBe(0);
+    }
+  });
+
+  it('HitEffect_5 (état éteint) est vide, les 5 autres cellules sont dessinées', () => {
+    const opaque = (name: string) => {
+      const s = ui.sprites[name];
+      if (!s) throw new Error(`${name} absent`);
+      let n = 0;
+      for (let y = 0; y < s.h; y++)
+        for (let x = 0; x < s.w; x++) {
+          if ((atlasPng.data[((s.y + y) * atlasPng.width + s.x + x) * 4 + 3] ?? 0) > 0) n++;
+        }
+      return n;
+    };
+    expect(opaque('HitEffect_5')).toBe(0);
+    for (let i = 0; i < 5; i++) expect(opaque(`HitEffect_${i}`)).toBeGreaterThan(0);
+    expect(opaque('UI_3')).toBe(0); // la 4e ligne de UI.png est vide : l'annonce « éteinte »
+    expect(opaque('UI_0')).toBeGreaterThan(0);
+  });
+
+  it("clip d'impact : 5 cellules de 2/60 s puis la cellule vide, durée 11/60 s", () => {
+    const c = clips['HitEffect'];
+    expect(c?.length).toBeCloseTo(11 / 60, 6);
+    expect(c?.alpha).toBeNull();
+    expect(c?.sprites.map((k) => k.sprite)).toEqual(
+      [0, 1, 2, 3, 4, 5].map((i) => `HitEffect_${i}`),
+    );
+    expect(c?.sprites.map((k) => k.time)).toEqual(expect.arrayContaining([0]));
+    c?.sprites.forEach((k, i) => expect(k.time).toBeCloseTo((i * 2) / 60, 6));
+  });
+
+  it("clip RoundStart : READY, vide, FIGHT, avec l'alpha de l'original", () => {
+    const c = clips['RoundStartAnimation'];
+    expect(c?.length).toBeCloseTo(2.9166667, 6);
+    expect(c?.sprites.map((k) => k.sprite)).toEqual(['UI_0', 'UI_3', 'UI_1']);
+    expect(c?.alpha?.map((k) => [Number(k.time.toFixed(3)), k.value])).toEqual([
+      [0, 0],
+      [0.167, 1],
+      [1.333, 1],
+      [1.417, 0],
+      [1.833, 1],
+      [2.833, 1],
+      [2.917, 0],
+    ]);
+  });
+
+  it('clip RoundEnd : K.O. de 0 à 2,5 s', () => {
+    const c = clips['RoundEndAnimation'];
+    expect(c?.length).toBe(2.5);
+    expect(c?.sprites.map((k) => k.sprite)).toEqual(['UI_2']);
+    expect(c?.alpha?.map((k) => [Number(k.time.toFixed(3)), k.value])).toEqual([
+      [0, 0],
+      [0.083, 1],
+      [2, 1],
+      [2.5, 0],
+    ]);
+  });
+
+  it("toutes les pentes d'alpha sont nulles : interpolation lisse entre clés", () => {
+    for (const clip of Object.values(clips)) {
+      for (const k of clip.alpha ?? []) expect([k.inSlope, k.outSlope]).toEqual([0, 0]);
+    }
   });
 });

@@ -1,4 +1,5 @@
 import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
 import { PNG } from 'pngjs';
 import type { SpriteRect, SpritesJson } from '../../src/data/types.ts';
 import {
@@ -8,6 +9,7 @@ import {
   parseRef,
   readTextureMeta,
   readUnityFile,
+  str,
   type Raw,
   type RawObject,
 } from './unity.ts';
@@ -15,6 +17,8 @@ import {
 /** `fileID` Unity d'un sprite : 21300000 + 2n pour le n-ième sprite d'une sheet. */
 const SPRITE_FILE_ID_BASE = 21300000;
 const ATLAS_WIDTH = 512;
+/** Marge transparente autour de chaque sprite : évite de lire un voisin quand l'échelle n'est pas entière. */
+const PADDING = 1;
 
 interface SourceSprite {
   png: string;
@@ -125,9 +129,50 @@ export function buildAtlas(containerPath: string, guidIndex: Map<string, string>
 
   // Dédoublonnage : plusieurs motions peuvent viser la même zone.
   const unique = new Map<string, SourceSprite>();
-  for (const s of sources.values()) unique.set(`${s.png}|${s.x}|${s.y}|${s.w}|${s.h}`, s);
+  for (const s of sources.values()) unique.set(spriteKey(s), s);
 
-  // Packing par étagères, du plus haut au plus bas (ordre stable pour un résultat reproductible).
+  const packed = pack(unique, pngs);
+
+  const sprites: Record<string, SpriteRect> = {};
+  for (const motionID of [...sources.keys()].sort((a, b) => a - b)) {
+    const s = sources.get(motionID);
+    if (!s) throw new Error('Atlas incohérent');
+    sprites[String(motionID)] = placedRect(s, packed.placed);
+  }
+
+  return {
+    json: {
+      atlas: { file: 'f00-atlas.png', width: ATLAS_WIDTH, height: packed.height },
+      sprites,
+    },
+    png: packed.png,
+  };
+}
+
+const spriteKey = (s: SourceSprite): string => `${s.png}|${s.x}|${s.y}|${s.w}|${s.h}`;
+
+function placedRect(s: SourceSprite, placed: Map<string, { x: number; y: number }>): SpriteRect {
+  const dest = placed.get(spriteKey(s));
+  if (!dest) throw new Error('Atlas incohérent');
+  return {
+    x: dest.x,
+    y: dest.y,
+    w: s.w,
+    h: s.h,
+    pivotX: s.pivotX,
+    pivotY: s.pivotY,
+    pixelsPerUnit: s.pixelsPerUnit,
+  };
+}
+
+/**
+ * Packing par étagères, du plus haut au plus bas (ordre stable pour un résultat reproductible),
+ * avec `PADDING` pixels transparents autour de chaque sprite.
+ */
+function pack(
+  unique: Map<string, SourceSprite>,
+  pngs: Map<string, PNG>,
+): { placed: Map<string, { x: number; y: number }>; png: Buffer; height: number } {
   const ordered = [...unique.entries()].sort(
     ([ka, a], [kb, b]) => b.h - a.h || b.w - a.w || (ka < kb ? -1 : 1),
   );
@@ -136,14 +181,16 @@ export function buildAtlas(containerPath: string, guidIndex: Map<string, string>
   let cy = 0;
   let shelfH = 0;
   for (const [key, s] of ordered) {
-    if (cx + s.w > ATLAS_WIDTH) {
+    const cellW = s.w + 2 * PADDING;
+    const cellH = s.h + 2 * PADDING;
+    if (cx + cellW > ATLAS_WIDTH) {
       cx = 0;
       cy += shelfH;
       shelfH = 0;
     }
-    placed.set(key, { x: cx, y: cy });
-    cx += s.w;
-    shelfH = Math.max(shelfH, s.h);
+    placed.set(key, { x: cx + PADDING, y: cy + PADDING });
+    cx += cellW;
+    shelfH = Math.max(shelfH, cellH);
   }
   const height = cy + shelfH;
 
@@ -154,28 +201,78 @@ export function buildAtlas(containerPath: string, guidIndex: Map<string, string>
     if (!dest || !src) throw new Error('Atlas incohérent');
     PNG.bitblt(src, atlas, s.x, s.y, s.w, s.h, dest.x, dest.y);
   }
+  return { placed, png: PNG.sync.write(atlas), height };
+}
+
+/** Images d'interface de combat (BattleCanvas.prefab), par ordre alphabétique de fichier. */
+const UI_FILES = [
+  'Art/BG.png',
+  'Art/Battle_Window.png',
+  'Art/Guard.png',
+  'Art/HitEffect.png',
+  'Art/Logo.png',
+  'Art/PlayerLabel.png',
+  'Art/Round.png',
+  'Art/UI.png',
+];
+
+export interface UiAtlas {
+  json: SpritesJson;
+  png: Buffer;
+  /** `UI.png|21300006` -> `UI_3` : retrouve le nom d'un sprite depuis une référence Unity. */
+  namesByRef: Map<string, string>;
+}
+
+/**
+ * Atlas nommé de l'interface de combat. Une image simple garde le nom de son fichier (`BG`),
+ * une sprite sheet donne un sprite par entrée de son `.meta` (`HitEffect_0`...).
+ */
+export function buildUiAtlas(assetsDir: string): UiAtlas {
+  const pngs = new Map<string, PNG>();
+  const named = new Map<string, SourceSprite>();
+  const namesByRef = new Map<string, string>();
+
+  for (const rel of UI_FILES) {
+    const pngPath = join(assetsDir, rel);
+    const file = rel.slice(rel.lastIndexOf('/') + 1);
+    const png = readPng(pngPath);
+    const meta = readTextureMeta(`${pngPath}.meta`);
+    pngs.set(pngPath, png);
+    const ppu = num(meta['spritePixelsToUnits'], 'spritePixelsToUnits');
+    const mode = num(meta['spriteMode'], 'spriteMode');
+
+    const add = (name: string, fileID: number): void => {
+      if (named.has(name)) throw new Error(`Nom de sprite en double : ${name}`);
+      named.set(name, {
+        ...resolveSprite(fileID, pngPath, meta, png.height, png.width),
+        pixelsPerUnit: ppu,
+      });
+      namesByRef.set(`${file}|${fileID}`, name);
+    };
+
+    if (mode === 2) {
+      list(obj(meta['spriteSheet'], 'spriteSheet')['sprites']).forEach((sprite, n) => {
+        add(str(obj(sprite, 'sprite')['name'], 'sprite.name'), SPRITE_FILE_ID_BASE + 2 * n);
+      });
+    } else {
+      add(file.replace(/\.png$/, ''), SPRITE_FILE_ID_BASE);
+    }
+  }
+
+  const unique = new Map<string, SourceSprite>();
+  for (const s of named.values()) unique.set(spriteKey(s), s);
+  const packed = pack(unique, pngs);
 
   const sprites: Record<string, SpriteRect> = {};
-  for (const motionID of [...sources.keys()].sort((a, b) => a - b)) {
-    const s = sources.get(motionID);
-    const dest = s && placed.get(`${s.png}|${s.x}|${s.y}|${s.w}|${s.h}`);
-    if (!s || !dest) throw new Error('Atlas incohérent');
-    sprites[String(motionID)] = {
-      x: dest.x,
-      y: dest.y,
-      w: s.w,
-      h: s.h,
-      pivotX: s.pivotX,
-      pivotY: s.pivotY,
-      pixelsPerUnit: s.pixelsPerUnit,
-    };
+  for (const name of [...named.keys()].sort()) {
+    const s = named.get(name);
+    if (!s) throw new Error('Atlas incohérent');
+    sprites[name] = placedRect(s, packed.placed);
   }
 
   return {
-    json: {
-      atlas: { file: 'f00-atlas.png', width: ATLAS_WIDTH, height },
-      sprites,
-    },
-    png: PNG.sync.write(atlas),
+    json: { atlas: { file: 'ui-atlas.png', width: ATLAS_WIDTH, height: packed.height }, sprites },
+    png: packed.png,
+    namesByRef,
   };
 }

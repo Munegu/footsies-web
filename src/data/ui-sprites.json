@@ -1,0 +1,171 @@
+{
+  "atlas": {
+    "file": "ui-atlas.png",
+    "width": 512,
+    "height": 104
+  },
+  "sprites": {
+    "BG": {
+      "x": 1,
+      "y": 1,
+      "w": 160,
+      "h": 90,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 100
+    },
+    "Battle_Window": {
+      "x": 163,
+      "y": 1,
+      "w": 155,
+      "h": 65,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 10
+    },
+    "Guard": {
+      "x": 209,
+      "y": 93,
+      "w": 10,
+      "h": 10,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 10
+    },
+    "HitEffect_0": {
+      "x": 423,
+      "y": 1,
+      "w": 15,
+      "h": 15,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 10
+    },
+    "HitEffect_1": {
+      "x": 389,
+      "y": 1,
+      "w": 15,
+      "h": 15,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 10
+    },
+    "HitEffect_2": {
+      "x": 440,
+      "y": 1,
+      "w": 15,
+      "h": 15,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 10
+    },
+    "HitEffect_3": {
+      "x": 406,
+      "y": 1,
+      "w": 15,
+      "h": 15,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 10
+    },
+    "HitEffect_4": {
+      "x": 457,
+      "y": 1,
+      "w": 15,
+      "h": 15,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 10
+    },
+    "HitEffect_5": {
+      "x": 372,
+      "y": 1,
+      "w": 15,
+      "h": 15,
+      "pivotX": 0,
+      "pivotY": 0,
+      "pixelsPerUnit": 10
+    },
+    "Logo": {
+      "x": 320,
+      "y": 1,
+      "w": 50,
+      "h": 15,
+      "pivotX": 0.5,
+      "pivotY": 0.5,
+      "pixelsPerUnit": 10
+    },
+    "P1_Label": {
+      "x": 253,
+      "y": 93,
+      "w": 10,
+      "h": 7,
+      "pivotX": 0,
+      "pivotY": 0,
+      "pixelsPerUnit": 10
+    },
+    "P2_Label": {
+      "x": 241,
+      "y": 93,
+      "w": 10,
+      "h": 7,
+      "pivotX": 0,
+      "pivotY": 0,
+      "pixelsPerUnit": 10
+    },
+    "Round_Empty": {
+      "x": 231,
+      "y": 93,
+      "w": 8,
+      "h": 8,
+      "pivotX": 0,
+      "pivotY": 0,
+      "pixelsPerUnit": 10
+    },
+    "Round_Won": {
+      "x": 221,
+      "y": 93,
+      "w": 8,
+      "h": 8,
+      "pivotX": 0,
+      "pivotY": 0,
+      "pixelsPerUnit": 10
+    },
+    "UI_0": {
+      "x": 1,
+      "y": 93,
+      "w": 50,
+      "h": 10,
+      "pivotX": 0,
+      "pivotY": 0,
+      "pixelsPerUnit": 10
+    },
+    "UI_1": {
+      "x": 53,
+      "y": 93,
+      "w": 50,
+      "h": 10,
+      "pivotX": 0,
+      "pivotY": 0,
+      "pixelsPerUnit": 10
+    },
+    "UI_2": {
+      "x": 105,
+      "y": 93,
+      "w": 50,
+      "h": 10,
+      "pivotX": 0,
+      "pivotY": 0,
+      "pixelsPerUnit": 10
+    },
+    "UI_3": {
+      "x": 157,
+      "y": 93,
+      "w": 50,
+      "h": 10,
+      "pivotX": 0,
+      "pivotY": 0,
+      "pixelsPerUnit": 10
+    }
+  }
+}

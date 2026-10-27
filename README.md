@@ -46,7 +46,7 @@ la touche `Q`. `F12` affiche / masque les boxes et la frame data.
 ## Données extraites
 
 `npm run extract` lit l'original (`vendor/`) et produit dans `src/data/` : `f00.json` (frame data),
-`f00-atlas.png` + `f00-sprites.json` (sprites), `art/` (décor, effets) et `audio/` (`.mp3`). Ces
+`f00-atlas.png` + `f00-sprites.json` (sprites du combattant), `ui-atlas.png` + `ui-sprites.json` + `ui-animations.json` (interface de combat et ses animations) et `audio/` (`.mp3`). Ces
 fichiers sont versionnés : le site déployé n'a pas besoin de `vendor/`. La conversion audio demande
 `ffmpeg` (`brew install ffmpeg`).
 

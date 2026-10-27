@@ -1,11 +1,12 @@
 // Extraction des données du FOOTSIES original (YAML Unity) vers src/data/.
 // Usage : npm run extract   (lit vendor/footsies-original, ne le modifie jamais)
-import { copyFileSync, existsSync, mkdirSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { convertDir, hasFfmpeg } from './lib/audio.ts';
 import { buildGuidIndex, extractFighter } from './lib/fighter.ts';
-import { buildAtlas } from './lib/sprites.ts';
+import { extractClips } from './lib/animations.ts';
+import { buildAtlas, buildUiAtlas } from './lib/sprites.ts';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const assets = join(root, 'vendor/footsies-original/Assets');
@@ -23,6 +24,8 @@ const writeJson = (file: string, data: unknown): void =>
   writeFileSync(join(out, file), JSON.stringify(data, null, 2) + '\n');
 
 mkdirSync(out, { recursive: true });
+// Anciennes copies d'images (avant l'atlas d'interface) : plus utilisées.
+rmSync(join(out, 'art'), { recursive: true, force: true });
 const guidIndex = buildGuidIndex(assets);
 
 const fighter = extractFighter(assets, guidIndex);
@@ -38,11 +41,14 @@ console.log(
   `f00-sprites.json : ${Object.keys(atlas.json.sprites).length} sprites, atlas ${atlas.json.atlas.width}x${atlas.json.atlas.height}`,
 );
 
-// Images de décor et d'effets, reprises telles quelles.
-mkdirSync(join(out, 'art'), { recursive: true });
-for (const name of ['Battle_BG.png', 'HitEffect.png', 'Guard.png']) {
-  copyFileSync(join(assets, 'Art', name), join(out, 'art', name));
-}
+// Interface de combat : atlas nommé + clips d'animation (impact, annonces de round).
+const ui = buildUiAtlas(assets);
+writeFileSync(join(out, 'ui-atlas.png'), ui.png);
+writeJson('ui-sprites.json', ui.json);
+console.log(
+  `ui-sprites.json : ${Object.keys(ui.json.sprites).length} sprites, atlas ${ui.json.atlas.width}x${ui.json.atlas.height}`,
+);
+writeJson('ui-animations.json', { clips: extractClips(assets, guidIndex, ui.namesByRef) });
 
 if (hasFfmpeg()) {
   const se = convertDir(join(assets, 'Sound/SE'), join(out, 'audio/se'));

@@ -1,0 +1,150 @@
+{
+  "clips": {
+    "EmptyRoundUI": {
+      "length": 0.016666668,
+      "alpha": null,
+      "sprites": [
+        {
+          "time": 0,
+          "sprite": "UI_3"
+        }
+      ]
+    },
+    "HitEffect": {
+      "length": 0.18333334,
+      "alpha": null,
+      "sprites": [
+        {
+          "time": 0,
+          "sprite": "HitEffect_0"
+        },
+        {
+          "time": 0.033333335,
+          "sprite": "HitEffect_1"
+        },
+        {
+          "time": 0.06666667,
+          "sprite": "HitEffect_2"
+        },
+        {
+          "time": 0.1,
+          "sprite": "HitEffect_3"
+        },
+        {
+          "time": 0.13333334,
+          "sprite": "HitEffect_4"
+        },
+        {
+          "time": 0.16666667,
+          "sprite": "HitEffect_5"
+        }
+      ]
+    },
+    "HitEffectOff": {
+      "length": 0.016666668,
+      "alpha": null,
+      "sprites": [
+        {
+          "time": 0,
+          "sprite": "HitEffect_5"
+        }
+      ]
+    },
+    "RoundEndAnimation": {
+      "length": 2.5,
+      "alpha": [
+        {
+          "time": 0,
+          "value": 0,
+          "inSlope": 0,
+          "outSlope": 0
+        },
+        {
+          "time": 0.083333336,
+          "value": 1,
+          "inSlope": 0,
+          "outSlope": 0
+        },
+        {
+          "time": 2,
+          "value": 1,
+          "inSlope": 0,
+          "outSlope": 0
+        },
+        {
+          "time": 2.5,
+          "value": 0,
+          "inSlope": 0,
+          "outSlope": 0
+        }
+      ],
+      "sprites": [
+        {
+          "time": 0,
+          "sprite": "UI_2"
+        }
+      ]
+    },
+    "RoundStartAnimation": {
+      "length": 2.9166667,
+      "alpha": [
+        {
+          "time": 0,
+          "value": 0,
+          "inSlope": 0,
+          "outSlope": 0
+        },
+        {
+          "time": 0.16666667,
+          "value": 1,
+          "inSlope": 0,
+          "outSlope": 0
+        },
+        {
+          "time": 1.3333334,
+          "value": 1,
+          "inSlope": 0,
+          "outSlope": 0
+        },
+        {
+          "time": 1.4166666,
+          "value": 0,
+          "inSlope": 0,
+          "outSlope": 0
+        },
+        {
+          "time": 1.8333334,
+          "value": 1,
+          "inSlope": 0,
+          "outSlope": 0
+        },
+        {
+          "time": 2.8333333,
+          "value": 1,
+          "inSlope": 0,
+          "outSlope": 0
+        },
+        {
+          "time": 2.9166667,
+          "value": 0,
+          "inSlope": 0,
+          "outSlope": 0
+        }
+      ],
+      "sprites": [
+        {
+          "time": 0,
+          "sprite": "UI_0"
+        },
+        {
+          "time": 1.4166666,
+          "sprite": "UI_3"
+        },
+        {
+          "time": 1.8333334,
+          "sprite": "UI_1"
+        }
+      ]
+    }
+  }
+}

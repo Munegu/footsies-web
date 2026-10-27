@@ -125,3 +125,26 @@ export interface SpritesJson {
   /** motionID -> rect dans l'atlas. */
   sprites: Record<string, SpriteRect>;
 }
+
+/** Clé d'une courbe d'animation Unity (interpolation de Hermite ; pente `null` = escalier). */
+export interface CurveKeyJson {
+  time: number;
+  value: number;
+  inSlope: number | null;
+  outSlope: number | null;
+}
+
+/** Un clip d'animation Unity (.anim) réduit à ce que l'interface utilise. */
+export interface AnimationClipJson {
+  /** Durée en secondes (`m_StopTime`). */
+  length: number;
+  /** Courbe de l'alpha de l'image (`m_Color.a`), ou null si le clip ne l'anime pas. */
+  alpha: CurveKeyJson[] | null;
+  /** Sprite affiché à partir de chaque instant (piste en escalier). */
+  sprites: { time: number; sprite: string }[];
+}
+
+/** src/data/ui-animations.json */
+export interface UiAnimationsJson {
+  clips: Record<string, AnimationClipJson>;
+}
