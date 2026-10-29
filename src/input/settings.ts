@@ -12,7 +12,8 @@ export interface Settings {
 
 export const DEFAULT_SETTINGS: Settings = {
   bindings: DEFAULT_BINDINGS,
-  masterVolume: 1,
+  // Moins fort que le maximum : le son part dès le premier clic, sans avoir pu régler quoi que ce soit.
+  masterVolume: 0.3,
   musicVolume: 1,
   sfxVolume: 1,
   musicEnabled: true,

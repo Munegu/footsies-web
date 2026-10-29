@@ -208,7 +208,7 @@ describe('volumes', () => {
 
   it('gauche / droite règlent le volume sélectionné', () => {
     const r = run([...toMaster, adjust(-1), adjust(-1)]);
-    expect(r.settings.masterVolume).toBe(0.8);
+    expect(r.settings.masterVolume).toBe(0.1); // défaut 0,3
     const music = run([...down(7), adjust(-1)]);
     expect(music.settings.musicVolume).toBe(0.9);
     const sfx = run([...down(8), adjust(-1)]);
@@ -216,7 +216,7 @@ describe('volumes', () => {
   });
 
   it('au maximum, droite ne change rien (même référence)', () => {
-    const r = run([...toMaster, adjust(1)]);
+    const r = run([...down(7), adjust(1)]); // musique : déjà à 1
     expect(r.settings).toBe(DEFAULT_SETTINGS);
     expect(r.effects).toEqual([]);
   });
@@ -230,7 +230,7 @@ describe('volumes', () => {
   it('clic sur un curseur : valeur visée, arrondie au cran', () => {
     const r = run([{ kind: 'setVolume', id: 'music', value: 0.34 }]);
     expect(r.settings.musicVolume).toBe(0.3);
-    expect(run([{ kind: 'setVolume', id: 'master', value: 9 }]).settings).toBe(DEFAULT_SETTINGS); // déjà 1
+    expect(run([{ kind: 'setVolume', id: 'music', value: 9 }]).settings).toBe(DEFAULT_SETTINGS); // déjà 1
     expect(run([{ kind: 'setVolume', id: 'sfx', value: -3 }]).settings.sfxVolume).toBe(0);
   });
 

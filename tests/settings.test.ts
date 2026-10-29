@@ -37,10 +37,10 @@ function memoryStorage(
 }
 
 describe('valeurs par défaut', () => {
-  it("touches de l'original, volumes à 100 %, musique active", () => {
+  it("touches de l'original, volume général à 30 %, musique active", () => {
     expect(DEFAULT_SETTINGS).toEqual({
       bindings: DEFAULT_BINDINGS,
-      masterVolume: 1,
+      masterVolume: 0.3,
       musicVolume: 1,
       sfxVolume: 1,
       musicEnabled: true,
@@ -85,7 +85,7 @@ describe('parseSettings', () => {
     });
     expect(parseSettings(text)).toEqual({
       ...custom,
-      masterVolume: 1,
+      masterVolume: 0.3,
       sfxVolume: 1,
       musicEnabled: true,
     });
@@ -104,7 +104,7 @@ describe('parseSettings', () => {
         musicVolume: Number.POSITIVE_INFINITY,
       }),
     );
-    expect([odd.masterVolume, odd.musicVolume]).toEqual([1, 1]);
+    expect([odd.masterVolume, odd.musicVolume]).toEqual([0.3, 1]);
   });
 
   it('touches invalides : touches par défaut, volumes conservés', () => {
