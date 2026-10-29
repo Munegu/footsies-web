@@ -2,7 +2,8 @@
 
 Portage fidèle dans le navigateur de **FOOTSIES**, le jeu de combat minimaliste de HiFight.
 
-> Original game by [HiFight](https://github.com/hifight/Footsies)
+> Original game by [HiFight](https://github.com/hifight/Footsies) · **portage non officiel**, non
+> affilié à HiFight. Il ne reprend rien de la version commerciale « FOOTSIES Rollback Edition ».
 
 ## Licence et crédits
 
@@ -11,6 +12,10 @@ Ce projet en est une **version modifiée : un portage dans le navigateur (TypeSc
 Web Audio), réalisé en 2026**. Il reprend la logique, les données, les sprites et les sons de
 l'original et est donc lui-même distribué sous **GPL-3.0** (voir `LICENSE`). Le code source doit
 rester public tant que le jeu est publié.
+
+Copyright (C) 2020 HiFight (jeu original) — Copyright (C) 2026 Nicolas Villetelle (portage).
+Fourni **sans aucune garantie**. Détails dans `NOTICE` et `LICENSE` ; mentions légales du site
+déployé dans `public/mentions-legales.html`.
 
 ## Démarrage
 

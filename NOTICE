@@ -1,0 +1,22 @@
+Footsies Web
+Portage navigateur non officiel de FOOTSIES.
+
+Copyright (C) 2020 HiFight — jeu original FOOTSIES (code, données, sprites, sons, musique)
+  https://github.com/hifight/Footsies (commit 08c293961bd0420ed7cdf26afa2fa032b6f98b70)
+Copyright (C) 2026 Nicolas Villetelle — portage navigateur (TypeScript, Canvas 2D, Web Audio)
+  https://github.com/Munegu/footsies-web
+
+Ce programme est une version modifiée de l'original : réécriture complète du moteur pour le
+navigateur, réalisée en 2026. Les données, sprites, sons et musique sont extraits de l'original
+(voir scripts/extract-unity.ts) et convertis (PNG atlas, MP3).
+
+Ce programme est un logiciel libre : vous pouvez le redistribuer et/ou le modifier selon les
+termes de la GNU General Public License telle que publiée par la Free Software Foundation,
+version 3 de la licence.
+
+Ce programme est distribué dans l'espoir qu'il sera utile, mais SANS AUCUNE GARANTIE ; sans même
+la garantie implicite de QUALITÉ MARCHANDE ou d'ADÉQUATION À UN USAGE PARTICULIER. Voir le
+fichier LICENSE pour plus de détails.
+
+Ce projet n'est ni affilié à HiFight, ni approuvé par lui. Il ne reprend rien de la version
+commerciale « FOOTSIES Rollback Edition ».

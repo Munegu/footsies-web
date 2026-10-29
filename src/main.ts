@@ -42,6 +42,7 @@ import { clientToRef } from './ui/pointer.ts';
 import { drawTitle } from './ui/title.ts';
 
 const canvas = document.getElementById('game') as HTMLCanvasElement;
+const stage = document.getElementById('stage') as HTMLElement;
 const credits = document.getElementById('credits') as HTMLElement;
 const ctx = canvas.getContext('2d');
 if (!ctx) throw new Error('Canvas 2D indisponible');
@@ -355,16 +356,19 @@ function tickScreen(pad1: PadSnapshot | null, pad2: PadSnapshot | null): void {
 /**
  * Canvas de 160x90 x S pixels (S entier) : les pixels du pixel art restent tous identiques.
  * On tient compte de devicePixelRatio : sur un écran Retina un pixel CSS = 2 pixels physiques.
+ * L'espace disponible est celui de #stage (la fenêtre moins le footer des crédits).
  */
 function resize(): void {
   const dpr = window.devicePixelRatio || 1;
-  const s = integerScale(window.innerWidth * dpr, window.innerHeight * dpr);
+  const s = integerScale(stage.clientWidth * dpr, stage.clientHeight * dpr);
   canvas.width = INTERNAL_WIDTH * s;
   canvas.height = INTERNAL_HEIGHT * s;
   canvas.style.width = `${canvas.width / dpr}px`;
   canvas.style.height = `${canvas.height / dpr}px`;
 }
-window.addEventListener('resize', resize);
+// ResizeObserver plutôt que l'évènement `resize` : la taille de #stage change aussi quand le
+// footer est affiché/masqué (écran titre), sans que la fenêtre ne bouge.
+new ResizeObserver(resize).observe(stage);
 resize();
 
 function replayBannerText(state: ReplayState, rec: RoundRecording): string {
