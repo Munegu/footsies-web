@@ -5,6 +5,8 @@ Portage fidèle dans le navigateur de **FOOTSIES**, le jeu de combat minimaliste
 > Original game by [HiFight](https://github.com/hifight/Footsies) · **portage non officiel**, non
 > affilié à HiFight. Il ne reprend rien de la version commerciale « FOOTSIES Rollback Edition ».
 
+**Jouer en ligne : <https://footsies-web.vercel.app/>**
+
 ## Licence et crédits
 
 FOOTSIES est un jeu de **HiFight**, publié sous **GPL-3.0** (<https://github.com/hifight/Footsies>).
